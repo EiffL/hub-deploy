@@ -103,6 +103,17 @@ resource "google_storage_bucket_iam_member" "build_sa_bucket" {
   member = "serviceAccount:${google_service_account.lc_build.email}"
 }
 
+# Cloud Build validates access to a user-specified source/logs bucket at
+# submission time with a bucket-level storage.buckets.get, which
+# objectAdmin (object-level only) lacks — without this the build is
+# rejected with "service account ... does not have access to the bucket".
+# legacyBucketReader adds buckets.get (+ object list) and nothing else.
+resource "google_storage_bucket_iam_member" "build_sa_bucket_get" {
+  bucket = google_storage_bucket.lc_build.name
+  role   = "roles/storage.legacyBucketReader"
+  member = "serviceAccount:${google_service_account.lc_build.email}"
+}
+
 # ---- what user server pods may do -----------------------------------------
 
 # Submit builds…
