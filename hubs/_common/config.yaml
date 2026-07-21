@@ -1,5 +1,200 @@
 jupyterhub:
+  hub:
+    config:
+      Authenticator:
+        enable_auth_state: true
+      JupyterHub:
+        authenticator_class: cilogon
+        # authenticator_class: github
+      CILogonOAuthenticator:
+        scope:
+          - openid
+          - email
+          - profile
+          - org.cilogon.userinfo
+        idps:
+          urn:mace:incommon:berkeley.edu:
+            default: true
+            username_derivation:
+              username_claim: eppn
+          urn:mace:incommon:ucdavis.edu:
+            username_derivation:
+              username_claim: eppn
+          urn:mace:incommon:ucsf.edu:
+            username_derivation:
+              username_claim: eppn
+          http://github.com/login/oauth/authorize:
+            username_derivation:
+              username_claim: preferred_username
+              action: prefix
+              prefix: github
+      GenericOAuthenticator:
+        login_service: CalNet
+        username_claim: sub
+        authorize_url: https://auth.berkeley.edu/cas/oidc/oidcAuthorize
+        token_url: https://auth.berkeley.edu/cas/oidc/oidcAccessToken
+        userdata_url: https://auth.berkeley.edu/cas/oidc/oidcProfile
+        scope:
+          - openid
+          - profile
+          - berkeley_edu_default
+      GenericOAuthenticator_calnet:
+        login_service: CalNet
+        username_claim: sub
+        authorize_url: https://auth.berkeley.edu/cas/oidc/oidcAuthorize
+        token_url: https://auth.berkeley.edu/cas/oidc/oidcAccessToken
+        userdata_url: https://auth.berkeley.edu/cas/oidc/oidcProfile
+        scope:
+          - openid
+          - profile
+          - berkeley_edu_default
+      GitHubOAuthenticator:
+        allowed_organizations:
+          - "bids-access:aifutures-hub-users"
+        admin_groups:
+          - "admins"
+        manage_groups: true
+        populate_teams_in_auth_state: true
+        scope:
+          - "user:email"
+          - "read:org"
+    extraConfig:
+      team_groups: |
+        def access_team_groups(auth_state):
+          # id of bids-access github organization
+          access_org_id = 239249075
+          access_teams = []
+          for team in auth_state["teams"]:
+            if team.get("organization_id") != access_org_id:
+              continue
+            access_teams.append(team["slug"])
+
+          return access_teams
+
+        c.GitHubOAuthenticator.auth_state_groups_key = access_team_groups
+      # mount shared directories for the collaboration groups
+      # these are the _home_ directories of the collaboration accounts
+      shared_directories: |
+        import json
+
+        with open("/etc/jupyterhub/access.json") as f:
+            access = json.load(f)
+
+        def mount_collaboration_directories(spawner):
+            if not spawner.volume_mounts:
+                spawner.volume_mounts = {}
+            for group in spawner.user.groups:
+                if group.name.endswith("@collaboration"):
+                    name, *_ = group.name.rpartition("@")
+                    # mount the user's home in shared/$group
+                    # user (home subPath) = bids-comms@collaboration
+                    # group = bids-comms@collaboration
+                    spawner.volume_mounts[group.name] = {
+                        "mountPath": f"/home/jovyan/shared/{name}",
+                        "name": "home",
+                        "subPath": group.name,
+                    }
+            if spawner.user.admin:
+                # admins can manage the shared home directory
+                spawner.volume_mounts["admin-home"] = {
+                    # don't put this in the jupyter root
+                    "mountPath": f"/home/all-home",
+                    "name": "home",
+                }
+
+        c.Spawner.pre_spawn_hook = mount_collaboration_directories
+      refresh_user: |
+        def refresh_user_hook(authenticator, user, auth_state):
+            if user.name.endswith("@collaboration"):
+                # don't require refresh user auth for collaboration and testing accounts
+                # (these aren't github users)
+                return True
+            # for all other users, refresh as usual
+            return None
+
+        c.OAuthenticator.refresh_user_hook = refresh_user_hook
+      git_env: |
+        # workaround https://github.com/jupyterhub/oauthenticator/pull/820
+        def modify_auth_state(authenticator, auth_state):
+            if auth_state.get("scope") and len(auth_state["scope"]) == 1:
+                auth_state["scope"] = auth_state["scope"][0].split(",")
+            return auth_state
+
+        c.GitHubOAuthenticator.modify_auth_state_hook = modify_auth_state
+
+        # populate github env
+        def auth_state_hook(spawner, auth_state):
+            if not auth_state:
+                return
+            github_user = auth_state["github_user"]
+            spawner.env["GITHUB_TOKEN"] = auth_state["access_token"]
+            spawner.env["GIT_AUTHOR_NAME"] = spawner.env["GIT_COMITTER_NAME"] = github_user["name"]
+            if github_user["email"]:
+                spawner.env["EMAIL"] = github_user["email"]
+
+        # c.Spawner.auth_state_hook = auth_state_hook
+      default_url: |
+        def default_url(request):
+          if request.current_user and request.current_user.admin:
+            return '/hub/admin'
+          return '/hub/spawn'
+
+        c.JupyterHub.default_url = default_url
+      cilogon_groups: |
+        import json
+
+        with open("/etc/jupyterhub/access.json") as f:
+            access = json.load(f)
+
+        c.OAuthenticator.admin_users = set(access["admin_users"])
+        c.OAuthenticator.allowed_users = allowed_users = set(access["allowed_users"])
+
+        collab_groups = {}
+        for name, users in access["collaborations"].items():
+          collab_username = f"{name}@collaboration"
+          c.JupyterHub.load_roles.append({
+            "name": collab_username.replace("@", "-"),
+            "groups": [collab_username],
+            "scopes": [
+              "admin-ui",
+              f"list:users!user={collab_username}",
+              f"access:servers!user={collab_username}",
+              f"admin:servers!user={collab_username}",
+            ]
+          })
+          # define group membership while we're here
+          for username in users:
+            collab_groups.setdefault(username, []).append(collab_username)
+            # grant access to users in collaborations
+            # avoids need to duplicate listing in allowed_users
+            allowed_users.add(username)
+
+          allowed_users.add(f"{name}@collaboration")
+
+        from jupyterhub.app import JupyterHub
+
+        def collaboration_groups(auth_state):
+          # we only get auth state here, not username
+          # recompute username for group lookup
+          # FIXME: this should be easier??
+          authenticator = JupyterHub.instance().authenticator
+          username = authenticator.user_info_to_username(auth_state["cilogon_user"])
+          groups = collab_groups.get(username, [])
+          authenticator.log.info(f"Loading groups for {username}: {groups}")
+          return groups
+
+        c.CILogonOAuthenticator.auth_state_groups_key = collaboration_groups
+        c.OAuthenticator.manage_groups = True
+        print(c.OAuthenticator.allowed_users)
+    extraFiles:
+      access:
+        mountPath: /etc/jupyterhub/access.json
+        # data in each hub's config.enc.yaml
   singleuser:
+    image:
+      name: ghcr.io/bids/aifutureshub/user
+      tag: main
+      pullPolicy: Always
     initContainers:
       # Make sure the home directory is owned by the user.
       - name: volume-mount-ownership-fix
@@ -24,3 +219,58 @@ jupyterhub:
       JUPYTER_RUNTIME_DIR: "/tmp/jupyter-runtime"
       # XDG_CACHE_DIR: "/tmp/cache"
       SHELL: /bin/bash
+      OPENCODE_CONFIG: /etc/opencode-default/opencode.json
+    extraFiles:
+      opencode:
+        mountPath: /etc/opencode-default/opencode.json
+        data:
+          $schema: "https://opencode.ai/config.json"
+          model: nrp/qwen3
+          disabled_providers:
+            - opencode
+          provider:
+            nrp:
+              npm: "@ai-sdk/openai-compatible"
+              name: NRP
+              options:
+                baseURL: "https://ellm.nrp-nautilus.io/v1"
+                apiKey: "{env:OPENAI_API_KEY}"
+              models:
+                kimi:
+                  name: kimi
+                  limit:
+                    "context": 262144
+                    "output": 32768
+                  options:
+                    chat_template_kwargs:
+                      "thinking": true
+                      "preserve_thinking": true
+                  variants:
+                    instruct:
+                      chat_template_kwargs:
+                        thinking: false
+                        preserve_thinking: false
+                qwen3:
+                  name: qwen3
+                qwen3-small:
+                  name: qwen3-small
+                gpt-oss:
+                  name: gpt-oss
+                gemma:
+                  name: gemma
+                gemma-small:
+                  name: gemma-small
+                glm-5:
+                  name: glm-5
+                minimax-m2:
+                  name: minimax-m2
+jupyterhub-home-nfs:
+  prometheusExporter:
+    enabled: true
+  gke:
+    enabled: true
+    # volumeId set per hub
+  quotaEnforcer:
+    # disable broken quota enforcer
+    enabled: false
+    hardQuota: "10" # in GiB

@@ -1,0 +1,56 @@
+jupyterhub:
+  hub:
+    config:
+      JupyterHub:
+        cookie_secret: ENC[AES256_GCM,data:J7ANX4QHrRqOslFruioVsKp+XYhUiPVPETU2UUqxA8+MhvHdKSIjQjODvgLAQQiCPqVXQgDXh6uI7PwLTdspNg==,iv:LRS7iwDr8qqoeSz8fCFO2XjitZUkY7vXlCTciaDzDbg=,tag:LBX4h7DXuk6GAfJl8QCczg==,type:str]
+      CryptKeeper:
+        keys:
+          - ENC[AES256_GCM,data:kRIUiGWtSwFc1oida/wN6vOFAtteq5LlZm1fydFJ+50nl7NVPo/BkGnveD6jk99Z0tNqZ8crv9/HPiNcP5n45g==,iv:ajq1CeD9Ob8fUq1pNz23Ttfyq2Pm7ltXbhV2AsXb5MI=,tag:LtxHw9QRmNl1OWWeidIfEA==,type:str]
+      CILogonOAuthenticator:
+        client_id: ENC[AES256_GCM,data:+65MkJswc/I4Y+0iWITIv1bjOmkZ2TxSMvAFNUG9OSnOasfgG27EJ3Cx1BBGO+d721VQ,iv:+Xb1247YUAYu+A+1YJKLTQm2ZV9L1F7sXxbaJZ3XUR8=,tag:pwq+niwkYjYODsurEnrjgg==,type:str]
+        client_secret: ENC[AES256_GCM,data:Oj14IsiufB667hd6fE8QtbQTj0wZLgXfTymM1Qo8VGGtWRDOW5BUHYyrmzLF9dsbcC0VfpVJ9Jvolp0N92Mfkyu/XFxLeL8Xj67e0uqzXGlKYsMRmbA=,iv:Mt5i1HFU2GwuCTvj//SsK8k21PFPWR3GNj3aKVt6Phw=,tag:Bv3OkNnHmMTA5mAQtHVfsA==,type:str]
+      GenericOAuthenticator:
+        client_id: ENC[AES256_GCM,data:sQY2guMIon2ImMYYTcFbbO8=,iv:7+haGUXHfAT82tKJRw/lWvnd4gCnSBnT7DsnvTxEPTg=,tag:KeEMTRbapUBi8fso6tQYNw==,type:str]
+        client_secret: ENC[AES256_GCM,data:i9x/SLwQ3nELqXvUEb4NA5Yqp0FuG0rcB48/U/gyYSpior97R47t3DKvFXSEyErp,iv:8VSlBTRy957gsqlnpsRDdb3F3lhqdyYWuqqQnoY5oms=,tag:CqsIBEQkf2aa1X4mFueNGg==,type:str]
+      GitHubOAuthenticator:
+        client_id: ENC[AES256_GCM,data:mKvNAh5T429/jernGiL8q9irOwY=,iv:ST1wDIfMdpGoruFtCQ6LrI1hQL5pRcjGimy7Tk5VEXs=,tag:pbQOB19ZD4Bl2qYgF3sfIA==,type:str]
+        client_secret: ENC[AES256_GCM,data:CPWV4OXv18U0Ib+AWWiAwLuimj/UXqei2L7hbKbntKiFM+k+NGYonA==,iv:VdMdhHz7lZlfg6Mwl1BIk03qqtbApq1By5F5n+b4Hbs=,tag:XjDJV2rA5HzofAlzwpTCsQ==,type:str]
+    extraFiles:
+      access:
+        data:
+          admin_users:
+            - ENC[AES256_GCM,data:khanoQ4+8ks1qT15OFfsBFXz,iv:Wt01C09tNlHZoT46qlWF3E/peOa7rCG0IV2Q1Noxl3A=,tag:NeTxW4WGEx3DvPILSJOYtg==,type:str]
+            - ENC[AES256_GCM,data:Hi5htd2u5LH6guBdB1zx4OkXMyWCYA9zEWjpnVo=,iv:QeyOi99bb923+Q7fIDVMZ5fypA5Ob9x8x3wtoKkVbFU=,tag:OTEqMKXCXlLPx94oWuUBRw==,type:str]
+            - ENC[AES256_GCM,data:wkQ6i23qmYFmlpDP6leqbQdnCeoRAfk7zhhy,iv:DQB6u99YLBMbzNIp+ORgvWbLnDGxDeaVaBvEoFcH2G0=,tag:WBqyq5Jawty0ze6Y0h5aLg==,type:str]
+          allowed_users:
+            - ENC[AES256_GCM,data:ARbrjhtj5e4rCMo/SWHnTnZO,iv:KTxhflB8MrUbOTx+UdgysZSo+Vuen2vbKijD097Fy7c=,tag:RsD4a/Y+KyzYiM7gTPcB4A==,type:str]
+            - ENC[AES256_GCM,data:UfQu+yoRgnDRWYAdAJfMDtIx9wQ=,iv:meMptDnXRJij2/JkrgetKLUqe76xbYlglmbB/JZmDp8=,tag:Y/eYTGQ4Z3n0aCxPdUBoDQ==,type:str]
+            - ENC[AES256_GCM,data:hHS7I1NY4+a5D3Oz,iv:jMqKjVKQaSik2QOkJGW69rmIELrOw3CjbnkQiU4qTbI=,tag:GrQ9BV161V3eJirjMQjLNg==,type:str]
+          collaborations:
+            bids-comms:
+              - ENC[AES256_GCM,data:dLNN1MtjbEHkz2bgT8vyp6h8xOM8JalqRi5rdRQ=,iv:NfppA84VDXeOObEqElJfFkzgACj2OUU1g/NVLw7LiTc=,tag:4GxPIsLE7MhKueKkEpUXbQ==,type:str]
+              - ENC[AES256_GCM,data:ykWzCJN6auJ1rfgBhUPpKbup,iv:swPGzMHYrxb/mlgL4j2xowEmLSQaPLlIW5On9xM5V8w=,tag:UiXEZbeZQ/lFSafS6ZXkKw==,type:str]
+              - ENC[AES256_GCM,data:LNZu4wnWkwM5ok+eN/o22dSV,iv:nTSjf4xk18n2ePQX2hz+sAfGPJ0GDPHYEUqfPQe7zPg=,tag:l/tAW6DGFJ2vrFj7VwCZzQ==,type:str]
+              - ENC[AES256_GCM,data:J+ctk9o5zJyKzbTJoo8Wk0ZQiw==,iv:g89V5pMCIPpLrADVR1keOm7oO7zRazmyW8un8QY2Fxs=,tag:oaaPEDrdrgctcRP4ANCjMA==,type:str]
+              - ENC[AES256_GCM,data:GPbVYKJ2NQrBAMUAH5zUB+C+32PoPebB,iv:vhjqaLmPiQv3RJ0t3sVZTCG1tvjDGxOeXswT81nGuB4=,tag:7Pa4kBM7IpX9UQmtihvsAw==,type:str]
+              - ENC[AES256_GCM,data:sG7B620/NjpiEz2zb38jaJDXZgz7wG2OCg==,iv:tVnRjBXKJBBVnBOZ80FvwYMJ/Wkh/i2E/rj24+Jv5l8=,tag:+lmrmfIdjdntUD3Ukb2pVQ==,type:str]
+              - ENC[AES256_GCM,data:OebxCEcSnlsiYZi5ILr9Hm7TUNb2jOo6cgMd,iv:Pf5ayA8x+APLwzT2tZmJTZYzJKdyOO9apoMaJl6k+yU=,tag:S5BVkwSgeTQdaoT1x1oqCQ==,type:str]
+              - ENC[AES256_GCM,data:UvS3y2lMKM9JlQLt3wQRuR0N4Vw=,iv:hNQF7cG+7cUVtNqIw7mUQ+t2Pj7HjMH+FIQMLMFCSH0=,tag:jBE1inaXiEjbAbxjH5IakA==,type:str]
+            lightcone:
+              - ENC[AES256_GCM,data:GY/ahUpBYS12+AY5ZX/b,iv:iJURNlsa6Axy+2Vm4qJ+ZJxb7xeJJXz8itn9OnkdGsY=,tag:ngXZmhlRaFi0g1rP2isqzQ==,type:str]
+              - ENC[AES256_GCM,data:DrOoGXf6D95SVPWf,iv:R20cqJFzkzxKBHLv3F73/fH1SM210BVsIfG6tuxvXo4=,tag:ZUeuyCbbxW7V1Eg+pYRjAQ==,type:str]
+              - ENC[AES256_GCM,data:cXSFVFnbSDYxS9By,iv:YdxoAjuMf6dDVtbmkWTrW2lZHWP9S7wLYaJsI2E8b80=,tag:5Yrvu9Th5oWVtV+gGoa/SQ==,type:str]
+  proxy:
+    secretToken: ENC[AES256_GCM,data:3QKrgCSyP6Wr17HB79aoy+VK1RbQhtNujm2dVy59HFsszl210D4Z3auoVcWrM/oMR1T0wRm33feJT96loLTyYio=,iv:A1KgOt0mhNAt6VVN4OMfRcDp7kYq37yn6ji29T+p60M=,tag:rAI3Cp0720E6H1gkmBkVdg==,type:str]
+  singleuser:
+    extraEnv:
+      OPENAI_API_KEY: ENC[AES256_GCM,data:MgGf643HEVCHaPFLYGhZ65n5fFqV5d5ljrtZwM/E5PM=,iv:FcGluA2wC+uRM4ow6Z2+jllGHeU5ZwFUajI4lMBrCcQ=,tag:yds3ZtTY73AIX+N0ppC/6Q==,type:str]
+sops:
+  gcp_kms:
+    - created_at: "2025-10-21T23:38:24Z"
+      enc: CiQANyKZ8JQe1adKWAUM5Zj4Zevua+ecZ/Yaa7QpDmaXBxll760SSQDUA4fNrJIcn6X07JCvjVXPvk35izob3ftA9ZLIIjYjwoYdBBNEuphU0KWlJFsuLktZMbk5PJKLhmuhZ9zgy3TN9MHsmvUEUsk=
+      resource_id: projects/bids-jupyterhub/locations/global/keyRings/sops/cryptoKeys/sops-key
+  lastmodified: "2026-07-09T15:18:34Z"
+  mac: ENC[AES256_GCM,data:XNOUBwz4yYnam0/GWu5egpaem3jPLQGphaJtMLqO26Ctd9WqeZ+xCSy2Jec/JD0uSMejD3acztM6sfu9cws71lHrr5cBH6GPFgyJMFR3JZUhZgWV8S5L8JR+QyrUd2FVSlvjLTRnQTwkmaq25XedXFZH4ys1DcEhWyZIm+U1ttQ=,iv:BwV2UDkzpxo6YQ6rgU9rpFBbkPhOUC+12+evK9qJd/A=,tag:ClFQGey7O6yaMGi1hsBLJA==,type:str]
+  unencrypted_suffix: _unencrypted
+  version: 3.13.2
