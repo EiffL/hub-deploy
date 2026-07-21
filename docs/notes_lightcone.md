@@ -41,7 +41,7 @@ gcloud storage buckets update gs://tf-state-lightconehub --versioning
 1. Get credentials for the new cluster and store them encrypted:
 
    ```
-   KUBECONFIG=clusters/lightcone/kubeconfig.dec.yaml gcloud container clusters get-credentials lightcone --zone europe-west1-b --project lightconehub
+   KUBECONFIG=clusters/lightcone/kubeconfig.dec.yaml gcloud container clusters get-credentials lightcone --region europe-west1 --project lightconehub
    sops encrypt clusters/lightcone/kubeconfig.dec.yaml --output clusters/lightcone/kubeconfig.enc.yaml
    ```
 
