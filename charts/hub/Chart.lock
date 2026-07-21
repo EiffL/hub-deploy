@@ -5,5 +5,8 @@ dependencies:
 - name: jupyterhub-home-nfs
   repository: oci://ghcr.io/2i2c-org/jupyterhub-home-nfs
   version: 1.2.0
-digest: sha256:4b20d0accfb5ff4ed703764dbde633079d4f80b77879d775c0c96747c85b7663
-generated: "2026-06-17T10:26:21.942668-07:00"
+- name: dask-gateway
+  repository: https://helm.dask.org
+  version: 2026.3.0
+digest: sha256:ec5656462912bae950276d9a5fea8a2cb575c7308eaeaa78456427b2355d4287
+generated: "2026-07-21T22:45:37.030017499+02:00"

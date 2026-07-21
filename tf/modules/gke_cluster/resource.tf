@@ -46,6 +46,14 @@ resource "google_compute_network" "vpc" {
 }
 
 resource "google_container_cluster" "cluster" {
+  # Workload Identity: lets pods obtain namespace-scoped GCP identities
+  # from the metadata server (used for keyless Cloud Build submission
+  # and registry probing by lightcone-cli). Direct IAM grants target
+  # principalSet://…/namespace/<ns> principals — no per-KSA GSAs.
+  workload_identity_config {
+    workload_pool = "${data.google_client_config.provider.project}.svc.id.goog"
+  }
+
   name     = var.name
   location = local.location
   release_channel {
@@ -97,6 +105,12 @@ resource "google_container_node_pool" "core" {
     machine_type = "e2-highmem-2"
     disk_size_gb = 50
     disk_type    = "pd-balanced"
+
+    # Required with Workload Identity: the GKE metadata server hands
+    # pods their namespace identity instead of the node SA.
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
 
     labels = {
       "hub.jupyter.org/node-purpose" = "core"

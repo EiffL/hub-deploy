@@ -10,3 +10,10 @@ dependencies:
   - name: jupyterhub-home-nfs
     version: "1.2.0"
     repository: oci://ghcr.io/2i2c-org/jupyterhub-home-nfs
+  # Dask Gateway for cluster-in-namespace compute (lightcone-cli's cloud
+  # backend). Keep the chart version in lockstep with the dask/distributed/
+  # dask-gateway pins in any image that acts as a worker.
+  - name: dask-gateway
+    version: "2026.3.0"
+    repository: "https://helm.dask.org"
+    condition: dask-gateway.enabled
