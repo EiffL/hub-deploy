@@ -38,18 +38,27 @@ projects build like public ones.
   work as workers. It also lifts z2jh's metadata block (safe under
   Workload Identity) and injects the build contract:
   `LIGHTCONE_REGISTRY`, `LIGHTCONE_BUILD_BUCKET`,
-  `LIGHTCONE_BUILD_SERVICE_ACCOUNT`.
+  `LIGHTCONE_BUILD_SERVICE_ACCOUNT`. It also gives user servers a
+  dedicated KSA (`userServiceAccount` + `singleuser.serviceAccountName`,
+  both `lightcone-user`) so the GCP grants below target only user
+  servers.
+- `charts/hub/templates/user-serviceaccount.yaml`: creates the
+  `userServiceAccount` KSA (only for hubs that set the value).
 - `tf/modules/gke_cluster`: **enables Workload Identity** (cluster
   `workload_identity_config` + `GKE_METADATA` on the node pools — the
   per-cluster user pools in `tf/clusters/*/main.tf` too). Applying this
   updates node pools in place (rolling recreate).
-- `tf/clusters/lightcone/cloudbuild.tf`: Cloud Build API, the `binder`
-  Artifact Registry repo (node SA + hub namespace get read; the
-  hardened node SA has no registry access otherwise), a source/logs
-  bucket with 7-day expiry, a dedicated build SA holding only
-  registry-writer + bucket access, and direct-WI grants for the hub
-  namespace principal: `cloudbuild.builds.editor`, `serviceAccountUser`
-  on the build SA, and bucket objectAdmin.
+- `tf/clusters/lightcone/cloudbuild.tf`: Cloud Build API, the
+  `lightcone-images` Artifact Registry repo (node SA + user KSA get
+  read; the hardened node SA has no registry access otherwise), a
+  source/logs bucket with 7-day expiry, a dedicated build SA holding
+  only registry-writer + bucket access, and direct-WI grants scoped to
+  the **user-server KSA principal** (`principal://…/sa/lightcone-user`,
+  not the whole namespace): `cloudbuild.builds.editor`,
+  `serviceAccountUser` on the build SA, registry read, and bucket
+  objectCreator + objectViewer (create/read, not overwrite/delete). The
+  hub control plane and dask worker pods (which run user-built images on
+  the namespace `default` SA) are deliberately excluded.
 
 ## Enabling on a hub
 
@@ -83,7 +92,7 @@ Optional, for `lc init`'s GitHub device flow: a GitHub OAuth app with
 ```bash
 # 1. contract present?
 env | grep -E 'DASK_GATEWAY__ADDRESS|LIGHTCONE_(REGISTRY|BUILD_BUCKET)'
-# 2. Workload Identity works? (namespace principal token)
+# 2. Workload Identity works? (user-server KSA principal token)
 curl -s -H "Metadata-Flavor: Google" \
   "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token" | head -c 60
 ```

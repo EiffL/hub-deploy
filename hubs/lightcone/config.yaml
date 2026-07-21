@@ -1,3 +1,8 @@
+# Dedicated KSA for user server pods (charts/hub/templates/user-serviceaccount.yaml),
+# so the Cloud Build / registry Workload Identity grants target only user
+# servers — not the hub control plane or dask workers. Name matches
+# `${local.name}-user` in tf/clusters/lightcone/cloudbuild.tf.
+userServiceAccount: lightcone-user
 jupyterhub:
   httpRoute:
     hostnames:
@@ -56,18 +61,22 @@ jupyterhub:
             if service["name"] == "dask-gateway":
                 service.setdefault("url", service_url)
   singleuser:
-    # Workload Identity: user pods get a namespace-scoped GCP identity
-    # from the metadata server (used by lightcone-cli to submit Cloud
-    # Build jobs and probe the registry). z2jh's default iptables block
-    # of the metadata endpoint must be lifted for that — safe under WI,
-    # since pods can only ever obtain their own namespace principal.
+    # Dedicated KSA (created above) so Workload Identity grants land only
+    # on user servers. Under direct-resource WI this KSA needs no
+    # annotation; the tf grants reference its principal.
+    serviceAccountName: lightcone-user
+    # Workload Identity: user pods get a GCP identity from the metadata
+    # server (used by lightcone-cli to submit Cloud Build jobs and probe
+    # the registry). z2jh's default iptables block of the metadata
+    # endpoint must be lifted for that — safe under WI, since a pod can
+    # only ever obtain the principal of its own KSA.
     cloudMetadata:
       blockWithIptables: false
     extraEnv:
       # lightcone-cli image-build contract (tf/clusters/lightcone/cloudbuild.tf):
       # content-addressed project images are built by GCP Cloud Build from
       # a staged-context tarball (no git involved) and pushed here.
-      LIGHTCONE_REGISTRY: europe-west1-docker.pkg.dev/lightconehub/binder
+      LIGHTCONE_REGISTRY: europe-west1-docker.pkg.dev/lightconehub/lightcone-images
       LIGHTCONE_BUILD_BUCKET: lightconehub-lightcone-lc-build
       LIGHTCONE_BUILD_SERVICE_ACCOUNT: lightcone-lc-build@lightconehub.iam.gserviceaccount.com
       # Optional, for `lc init`'s GitHub device flow: client id (public)
