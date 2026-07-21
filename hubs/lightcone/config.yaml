@@ -111,6 +111,13 @@ dask-gateway:
     backend:
       scheduler:
         extraPodConfig:
+          # Pin to the user node pool (like z2jh singleuser pods). Dask
+          # pods are created by KubeBackend, not z2jh, so they don't
+          # inherit its matchNodePurpose affinity; without this they can
+          # land on the core node alongside the hub/proxy. No toleration
+          # needed — the pools carry labels, not taints.
+          nodeSelector:
+            hub.jupyter.org/node-purpose: user
           volumes:
             - name: home
               persistentVolumeClaim:
@@ -119,6 +126,8 @@ dask-gateway:
           imagePullPolicy: Always # mutable tags (e.g. :main) must not go stale
       worker:
         extraPodConfig:
+          nodeSelector:
+            hub.jupyter.org/node-purpose: user
           volumes:
             - name: home
               persistentVolumeClaim:
