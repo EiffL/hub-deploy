@@ -67,10 +67,27 @@ projects build like public ones.
    networkPolicy egress, `dask-gateway:` chart values with
    `enabled: true`) plus the three `LIGHTCONE_*` env vars to the hub's
    config — `hubs/lightcone/config.yaml` is the reference.
-3. `CLUSTER_NAME=lightcone HUB_NAME=lightcone nox -s helm_hub`.
+3. Apply the dask-gateway CRDs (Traefik + DaskCluster). The chart ships
+   them in `crds/`, but helm only auto-installs those on a *fresh*
+   install — never on upgrade, which is what deploying onto an existing
+   hub release is. Without this, `helm_hub` fails with "no matches for
+   kind IngressRoute/Middleware in version traefik.io/v1alpha1":
+
+   ```
+   helm dependency update charts/hub
+   kubectl apply --server-side -f charts/hub/charts/dask-gateway/crds/
+   ```
+
+   (extract the chart first if needed: `tar xzf
+   charts/hub/charts/dask-gateway-*.tgz -C charts/hub/charts/`).
+4. `CLUSTER_NAME=lightcone HUB_NAME=lightcone nox -s helm_hub`.
 
 No secrets to manage: registry pushes happen inside Cloud Build as the
 build SA, and pods authenticate via Workload Identity.
+
+To use it, restart your notebook server after step 4 so it picks up the
+dedicated KSA and the `DASK_GATEWAY__*` / `LIGHTCONE_*` env; servers
+spawned before the upgrade keep the old pod spec until restarted.
 
 ## Image requirements
 
