@@ -1,15 +1,20 @@
 jupyterhub:
   httpRoute:
     hostnames:
-      - aifutureslab-hub.bids.berkeley.edu
+      - hub.lightconeresearch.org
   hub:
     config:
       JupyterHub:
-        public_url: https://aifutureslab-hub.bids.berkeley.edu
+        authenticator_class: github
+        public_url: https://hub.lightconeresearch.org
       OAuthenticator:
-        oauth_callback_url: https://aifutureslab-hub.bids.berkeley.edu/hub/oauth_callback
-      GenericOAuthenticator_calnet:
-        oauth_callback_url: https://aifutureslab-hub.bids.berkeley.edu/hub/oauth_callback
+        oauth_callback_url: https://hub.lightconeresearch.org/hub/oauth_callback
+      GitHubOAuthenticator:
+        # access controlled by allowed_users/admin_users in access.json
+        # (data in config.enc.yaml); the org/team gating in _common is
+        # Berkeley-specific, override it away here
+        allowed_organizations: []
+        admin_groups: []
 jupyterhub-home-nfs:
   gke:
-    volumeId: projects/bids-jupyterhub/zones/us-central1-a/disks/hub-nfs-demo
+    volumeId: projects/lightconehub/zones/europe-west1-b/disks/hub-nfs-lightcone

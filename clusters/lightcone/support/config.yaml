@@ -1,0 +1,46 @@
+coreNodeSelector: &coreNodeSelector
+  hub.jupyter.org/node-purpose: core
+gateway:
+  # need to specify each hostname individually on the gateway
+  # for cert-manager
+  hostnames:
+    - hub-grafana.lightconeresearch.org
+    - hub-prometheus.lightconeresearch.org
+    - hub.lightconeresearch.org
+  config:
+    provider:
+      kubernetes:
+        envoyService:
+          annotations:
+            # preserve ip when gateway service gets recreated
+            cloud.google.com/l4-rbs: "enabled"
+            networking.gke.io/load-balancer-ip-addresses: "lightcone-ingress"
+grafana:
+  nodeSelector: *coreNodeSelector
+  grafana.ini:
+    auth.anonymous:
+      enabled: true
+      org_name: Lightcone
+      org_role: Viewer
+    auth.basic:
+      enabled: true
+  route:
+    main:
+      hostnames:
+        - hub-grafana.lightconeresearch.org
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: prometheus
+          orgId: 1
+          type: prometheus
+          url: https://hub-prometheus.lightconeresearch.org
+          isDefault: true
+          editable: false
+prometheus:
+  server:
+    route:
+      main:
+        hostnames:
+          - hub-prometheus.lightconeresearch.org

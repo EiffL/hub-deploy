@@ -1,4 +1,6 @@
 creation_rules:
+  - path_regex: (clusters|hubs)/lightcone/.*
+    gcp_kms: projects/lightconehub/locations/global/keyRings/sops/cryptoKeys/sops-key
   - gcp_kms: projects/bids-jupyterhub/locations/global/keyRings/sops/cryptoKeys/sops-key
 stores:
   yaml:
