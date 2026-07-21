@@ -1,5 +1,11 @@
 coreNodeSelector: &coreNodeSelector
   hub.jupyter.org/node-purpose: core
+# The dask-gateway subchart is a conditional dependency (Chart.yaml),
+# and helm ENABLES a conditional dependency when the condition path is
+# missing from values — declare the off-default here; hubs opt in with
+# their own configuration (see hubs/lightcone/config.yaml).
+dask-gateway:
+  enabled: false
 jupyterhub:
   proxy:
     chp:

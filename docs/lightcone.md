@@ -20,10 +20,10 @@ projects build like public ones.
 
 - `charts/hub/Chart.yaml`: one conditional dependency — `dask-gateway`
   2026.3.0.
-- `hubs/_common/config.yaml`: only `dask-gateway.enabled: false` — helm
+- `charts/hub/values.yaml`: `dask-gateway.enabled: false` — helm
   enables a conditional dependency when the condition path is missing
-  from values, so the default must be declared for hubs that don't opt
-  in. All actual gateway configuration is hub-local.
+  from values, so the chart declares its own off-default. All actual
+  gateway configuration is hub-local; `hubs/_common` is untouched.
 - `hubs/lightcone/config.yaml`: everything else. The z2jh side declares
   the `dask-gateway` hub service (z2jh autogenerates its token; the
   gateway chart reads it from the `hub` secret by default — no token

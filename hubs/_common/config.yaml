@@ -264,13 +264,6 @@ jupyterhub:
                   name: glm-5
                 minimax-m2:
                   name: minimax-m2
-# The dask-gateway subchart is a conditional dependency of charts/hub,
-# and helm ENABLES a conditional dependency when the condition path is
-# missing from values — keep it off by default here; hubs opt in with
-# their own configuration (see hubs/lightcone/config.yaml).
-dask-gateway:
-  enabled: false
-
 jupyterhub-home-nfs:
   prometheusExporter:
     enabled: true
