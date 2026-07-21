@@ -70,6 +70,15 @@ gcloud storage buckets update gs://tf-state-lightconehub --versioning
 
 ## Notes
 
+- One-time after first NFS deploy: the export root on a fresh disk is owned by
+  root, but the ganesha export squashes all clients to uid 1000, so the kubelet
+  cannot create user home subdirectories. Fix from the nfs-server container:
+
+  ```
+  kubectl exec -n lightcone deploy/home-nfs -c nfs-server -- chown 1000:1000 /export
+  ```
+
+
 - Everything shared lives in `hubs/_common/config.yaml` and
   `tf/modules/gke_cluster`; lightcone only carries project/region/hostname
   specifics.
