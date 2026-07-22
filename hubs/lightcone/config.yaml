@@ -126,6 +126,16 @@ dask-gateway:
                 claimName: home-nfs-mount
         extraContainerConfig:
           imagePullPolicy: Always # mutable tags (e.g. :main) must not go stale
+          # Project images are environment-agnostic (no USER baked in,
+          # image builds run as root). Pod identity is deployment
+          # config: run cluster pods as the notebook uid so everything
+          # written to the NFS home stays user-owned. No passwd entry
+          # is needed — lc provisions USER/LOGNAME/HOME into the pods
+          # via the `environment` cluster option, which keeps
+          # getpass.getuser() (snakemake startup) working.
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
       worker:
         extraPodConfig:
           nodeSelector:
@@ -136,6 +146,9 @@ dask-gateway:
                 claimName: home-nfs-mount
         extraContainerConfig:
           imagePullPolicy: Always
+          securityContext: # user-owned outputs; see scheduler note
+            runAsUser: 1000
+            runAsGroup: 1000
     extraConfig:
       lightcone: |
         from dask_gateway_server.options import Options, Integer, Float, Mapping, String
