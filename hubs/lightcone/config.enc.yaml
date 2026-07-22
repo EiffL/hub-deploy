@@ -2,26 +2,34 @@ jupyterhub:
   hub:
     config:
       JupyterHub:
-        cookie_secret: ENC[AES256_GCM,data:GJlqUCQt9gjNG/XJl4K/I436ezmy45QkbrkwWhOn0Zo86QK6ACPg11xpwfU4zWd6tO4b23wDJIzqn06SopFnbw==,iv:vcmeJvo3vyb4tfJiCUiypkzElwdq/AK+8TotGRrQbbI=,tag:lSbdTm2v8pOQC66kQPdlTg==,type:str]
+        cookie_secret: ENC[AES256_GCM,data:IjSERmHHNlHB6LkfdOylhzwaSe4YBxcao4L4rLAKis6io47DN9TmEEsXi4hNADDxOcXPDnx+Q6TFCBTMWMXK0A==,iv:hUXj06gx5Pu1Kk4dUM3v2XGs8U0PIZHkJXJl9VuXjIs=,tag:ugmRccQROmar3PPnXe+7AQ==,type:str]
       CryptKeeper:
         keys:
-          - ENC[AES256_GCM,data:JPa3P7KuK4tTaijsZ23IX8yJXyz9OkVnx0SwLUg0m4W2XMC3fAaNLKSUvBn8q3FzGkuzTAGXWd+njrJa5NkUQw==,iv:KAesphuRPad7cjm4Kqk1LV1WAzDqFMNthuT79OR9z10=,tag:P21rkOw2LCBFPtZw42Ah3Q==,type:str]
+          - ENC[AES256_GCM,data:IXdhjvQKXvx+YnNEPh0FAzS0S+DzLn/N2XklkFDNwHBCVTcWv431zA5+ihGcIZT068+Rs7dWhqIo/WLmYnjhEA==,iv:/3KwHvosG5DbL6UHofmfjO3i/idwQ7vt4h0ImAL3blQ=,tag:WPHzIygMC1tIYgLcvd5/Yw==,type:str]
       GitHubOAuthenticator:
-        client_id: ENC[AES256_GCM,data:alyw+Hxe81p2bXoGcHIFqZ5ypvQ=,iv:qUUEbBcAWt1/hQRSOCWERPWol8tWBcnMJZDAzrntMmM=,tag:E/2Kv8nTqP++Io2R/z5rrA==,type:str]
-        client_secret: ENC[AES256_GCM,data:GEL4r/xdQjWAEv28lkogWvbq5VsbqWGj3IiLskrPX5JjnWnA8SogEw==,iv:r9121cfVH0P+vxXJWE6Fc2aiMxGgZGMhs6mzRihgXY8=,tag:7ozzQCTp17jpzKEbFSh0Rw==,type:str]
+        client_id: ENC[AES256_GCM,data:w6NaXWFhcKRTAHzwBB6aYHgxltU=,iv:A35pfUGJmQesf5vHaIGaZV2SDQyjlt8+UV+j8FTkFWE=,tag:mJUuA/bhnVUl7rZ76aRmMg==,type:str]
+        client_secret: ENC[AES256_GCM,data:BOLUFsPn2YAl6EFKFillg8JsEysQU0doLM2PPt6ZvyRYouIwKLqdqA==,iv:nPcfPAH85jQX6rXwI4c4CKXozJVpTjRKXsdXfeV8uhk=,tag:rBrNwxFo8goEygB+yZUC4g==,type:str]
     extraFiles:
       access:
         data:
           admin_users:
-            - ENC[AES256_GCM,data:+qMq99A=,iv:Xl8g0jdTkvWf25Y0aFezKDuxpxMOeDCPjU452kTBlGY=,tag:/nl7d2tQ0z9lC5Fgj46N2w==,type:str]
-          allowed_users: []
+            - ENC[AES256_GCM,data:cuYVKHA=,iv:B7SINBmmp0hrJexyo0tNUqgLRGQz2alxoe6H3uksQJ0=,tag:sdw0VQ4cTV0EUQhEEbyfpA==,type:str]
+            - ENC[AES256_GCM,data:cDAisNHFbyE=,iv:vNWnGYcrbKL6+gBqXkz6EfyrnbLGiz0e0ZSWMkhv84o=,tag:5ntvLiRwlVNnnmKiRC9ZYQ==,type:str]
+          allowed_users:
+            - ENC[AES256_GCM,data:BAdwkUazCcO5,iv:Ux3y2kd9swQsPl7eGXkB56fxYKctJsgL3Ki6mdmryDc=,tag:XOV0XGwMljb0fWC6QGJhcg==,type:str]
+            - ENC[AES256_GCM,data:vAI69f4=,iv:zeCx2vZL21wCjEDtGM1AiJQI7dHnc5uJl3JE1Rkv32g=,tag:a5vSlY2CF1MQ8gZFzvQshQ==,type:str]
+            - ENC[AES256_GCM,data:60YSplCZu/o=,iv:SqHqYbPZ21Pt1bMsom1z1pY08TrKS9GBQzNp+RhUTtk=,tag:DGZaaYMV0n7zauzO1UnLKQ==,type:str]
+            - ENC[AES256_GCM,data:a0gDET/G2rnF,iv:9wdCpnUjXD2OXjsjI993yuEYCulfIKYUE/IPRxHDZuU=,tag:QpVx0/n2u4B17Sa7ajKo7g==,type:str]
+            - ENC[AES256_GCM,data:JYcMf9w=,iv:ZPyVbyK6Xr0JU+v4DO43BD01nHcMrRTcYyX3PMPl+wY=,tag:7St2/dbieVa1+TXswguE1g==,type:str]
+            - ENC[AES256_GCM,data:/qa+TRBON9BeFTMbrqYZ,iv:KbqV9lghXi9euVSdTqhyueCeYlx6e3xnU8llgMSbxHU=,tag:WJn6OCLIK8n0J9VaD1nuhQ==,type:str]
+            - ENC[AES256_GCM,data:+UeimZ+Ca3NAFQ==,iv:3j3j8GmF3iAW5hkDAIJMO8z0+h6u0mrRUZiVafUs6Rk=,tag:A+3fOSCQfNwG5qb9eySaww==,type:str]
           collaborations: {}
 sops:
   gcp_kms:
-    - created_at: "2026-07-21T19:50:52Z"
-      enc: CiQA4YWzxot+D2E/XldrgSaLVu9x1K3otyLZHkHUIdDQC6FNDrYSSQDgEf8yOwsBwBF2EVNCNVaqM+hyrk329M1Yz3rLNUW1EoyfoxoDCg1IjCx72EnuIYvxZ/CD/U93XXSX9IPZHOHY6o2QkfuOX7w=
+    - created_at: "2026-07-22T11:45:55Z"
+      enc: CiQA4YWzxhN3w7/BR68/Mm1dNv+Nj2F9L3UjyEddMO+3k2Ie+4USSQDgEf8yOr4Fxhq9t5X1YQflMnGBrPJDRyOHsG2Mo2PpFZ4FVQQ5HbsXv6rDwUw4bXN5vygAMUNjcFuKR8tOJKFF1ZHeszf+yWQ=
       resource_id: projects/lightconehub/locations/global/keyRings/sops/cryptoKeys/sops-key
-  lastmodified: "2026-07-21T19:50:53Z"
-  mac: ENC[AES256_GCM,data:TuD1gWQ5TC2e26D6Uv74/pephTx+HRjEJy0PVgLK1SC5V1hJwXwiuJmomKQvBdANzlr4KXlcQRGnFvF66Q+a7WParFbCGAQMAsKbvSszyDEdadCxWjigYafAq7bva5nd5paNhvH4q9VoEHvm61VjtsYNWBFsZJBWwzQlKQP7pvA=,iv:oHFlunS+50sutJabecFEsxByRgdwQPl3LsGqb1bY3rU=,tag:x6Ywqiw3e/fKdSC+i2a4Ww==,type:str]
+  lastmodified: "2026-07-22T11:45:55Z"
+  mac: ENC[AES256_GCM,data:xNUjzCV4SNolHiVWdoLswXFRJPNoMi2jKlBs5GarPdcWJCJlMLSevelTo6RsDxQVqUn83z1Sy2EU7Gap03YztLzuhWN2IVb0Ww4f7wDMTW8O1Q+RcGWbryTl7TrLB+tGsFe4/hu2YbjBC5vVBAWXHXFITlOJEhCJplT0Gr5kBjs=,iv:um3iZj9zQ5oAytfMsWzLD3QEYS4kejzUWrkSTXe/EGk=,tag:JCYCuqrma9n0ivqiyQ44iA==,type:str]
   unencrypted_suffix: _unencrypted
   version: 3.13.2
