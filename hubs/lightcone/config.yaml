@@ -200,6 +200,17 @@ dask-gateway:
         # Reap clusters orphaned by a crashed client; `lc run` shuts its
         # own cluster down on exit.
         c.KubeClusterConfig.idle_timeout = 1800
+
+        # Modern dask/distributed removed the legacy `dask-scheduler` /
+        # `dask-worker` console scripts (gone in e.g. distributed
+        # 2026.7.x, which lightcone project images carry); the chart
+        # default still execs them, so scheduler pods die at exec with
+        # "executable file not found". The `dask scheduler` / `dask
+        # worker` subcommands exist since 2022.10 and take the same
+        # flags (incl. --preload arg passthrough), so this is safe for
+        # any plausible image.
+        c.KubeClusterConfig.scheduler_cmd = ["dask", "scheduler"]
+        c.KubeClusterConfig.worker_cmd = ["dask", "worker"]
   traefik:
     service:
       type: ClusterIP # reached via the hub proxy / in-cluster only
