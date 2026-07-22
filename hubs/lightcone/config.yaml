@@ -97,10 +97,12 @@ jupyterhub-home-nfs:
 
 # ---- lightcone-cli compute -------------------------------------------------
 # Auth rides JupyterHub (token pairing is automatic via the z2jh `hub`
-# secret). The extraConfig below is the lightcone-cli contract: per-user
-# home mounted in scheduler/worker pods at the notebook's path, worker
-# resource advertisement, and env that keeps arbitrary user images
-# functional (USER/LOGNAME for passwd-less uid 1000).
+# secret). The gateway config below stays close to a stock 2i2c daskhub:
+# standard image/worker_cores/worker_memory/environment cluster options.
+# lightcone-cli provisions its own worker env (resource advertisement,
+# USER/LOGNAME/HOME, provenance image ref) through the `environment`
+# option; the one deployment-specific piece is mounting each user's own
+# home in scheduler/worker pods at the notebook's path.
 
 dask-gateway:
   enabled: true
@@ -156,34 +158,20 @@ dask-gateway:
             return {**container_config, "volumeMounts": mounts}
 
         def options_handler(options, user):
+            # Stock daskhub shape: cores/memory/image/environment pass
+            # straight through. Everything lightcone-specific (worker
+            # resource advertisement, USER/LOGNAME/HOME for passwd-less
+            # images, LIGHTCONE_WORKER_IMAGE provenance) is provisioned
+            # by `lc run` itself through the standard `environment`
+            # option — the only deployment-specific piece left is the
+            # per-user home mount below.
             return {
                 "worker_cores": options.worker_cores,
                 "worker_memory": "%fG" % options.worker_memory,
                 "image": options.image,
                 "worker_extra_container_config": _with_home(_worker_ct, user.name),
                 "scheduler_extra_container_config": _with_home(_scheduler_ct, user.name),
-                # Applied to scheduler AND worker pods: HOME first
-                # (user-overridable), then user env, then required keys.
-                "environment": {
-                    # ~ must expand to the mounted home, as on the notebook.
-                    "HOME": "/home/jovyan",
-                    **options.environment,
-                    # Pods run as uid 1000; user-built images need not have
-                    # a passwd entry for it, and getpass.getuser() (called
-                    # by snakemake at startup) crashes on a passwd-less
-                    # uid. getuser() checks these env vars first.
-                    "USER": "jovyan",
-                    "LOGNAME": "jovyan",
-                    # lightcone's snakemake-executor-plugin-dask schedules
-                    # on abstract resources cpus/memory/gpus; workers that
-                    # don't advertise them hang silently.
-                    "DASK_DISTRIBUTED__WORKER__RESOURCES__CPUS": str(options.worker_cores),
-                    "DASK_DISTRIBUTED__WORKER__RESOURCES__MEMORY": str(int(options.worker_memory * 1e9)),
-                    "DASK_DISTRIBUTED__WORKER__RESOURCES__GPUS": "0",
-                    # Ground truth for lightcone provenance: recorded in
-                    # each rule's manifest as what actually executed.
-                    "LIGHTCONE_WORKER_IMAGE": options.image,
-                },
+                "environment": options.environment,
             }
 
         c.Backend.cluster_options = Options(
