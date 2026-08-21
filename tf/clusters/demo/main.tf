@@ -28,14 +28,6 @@ module "gke_cluster" {
   source = "../../modules/gke_cluster"
   name   = local.name
   hub_nfs_disks = {
-    demo = {
-      name = "hub-nfs-demo"
-      # future: use hyperdisk-balanced (requires n4)
-      # while using pd-balanced, need to increase size to get performance
-      # pd-balanced claims 6 IOPS per GB
-      type = "pd-balanced"
-      size = 300
-    }
     hd = {
       name = "hub-nfs-demo-hyperdisk"
       type = "hyperdisk-balanced"
