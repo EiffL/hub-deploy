@@ -96,45 +96,6 @@ resource "google_container_cluster" "cluster" {
 }
 
 
-resource "google_container_node_pool" "core-2607" {
-  name     = "core-202607"
-  cluster  = google_container_cluster.cluster.name
-  location = local.location # location of *cluster*
-  # node_locations lets us specify a single-zone regional cluster:
-  node_locations = [local.zone]
-
-  lifecycle {
-    ignore_changes = [node_count]
-  }
-
-  autoscaling {
-    min_node_count = 0
-    max_node_count = 1
-  }
-  node_count = 1
-
-  node_config {
-    machine_type = "n2-highmem-2"
-    disk_size_gb = 50
-    disk_type    = "pd-balanced"
-
-    # Required with Workload Identity: the GKE metadata server hands
-    # pods their namespace identity instead of the node SA.
-    workload_metadata_config {
-      mode = "GKE_METADATA"
-    }
-
-    labels = {
-      "hub.jupyter.org/node-purpose" = "core"
-    }
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = google_service_account.sa["gke-node"].email
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
-  }
-}
-
 resource "google_container_node_pool" "core-2608" {
   name     = "core-e-202608"
   cluster  = google_container_cluster.cluster.name
