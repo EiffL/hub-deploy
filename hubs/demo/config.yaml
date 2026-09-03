@@ -294,14 +294,24 @@ jupyterhub:
           api_key_env: OPENAI_API_KEY
           base_url: https://ellm.nrp-nautilus.io/v1
           models:
+            - name: qwen3
+              context_limit: 1000000
+            - name: qwen3-small
+              context_limit: 1000000
             - name: gpt-oss
               context_limit: 131072
-            - name: qwen3
-              context_limit: 1010000
             - name: gemma
               context_limit: 262144
-            - name: qwen3-small
-              context_limit: 1010000
+            - name: gemma-small
+              context_limit: 262144
+            - name: kimi
+              context_limit: 131072
+            - name: glm-5
+              context_limit: 1048576
+            - name: dedepseek-v4-flash
+              context_limit: 1048576
+            - name: minimax-m2
+              context_limit: 204800
           supports_streaming: true
       server_config:
         mountPath: "/usr/local/etc/jupyter/jupyter_server_config.py"
