@@ -22,7 +22,7 @@ jupyterhub:
               username_claim: eppn
           urn:mace:incommon:ucsf.edu:
             username_derivation:
-              username_claim: eppn
+              username_claim: email
           http://github.com/login/oauth/authorize:
             username_derivation:
               username_claim: preferred_username
@@ -113,6 +113,22 @@ jupyterhub:
             return None
 
         c.OAuthenticator.refresh_user_hook = refresh_user_hook
+      log_cilogon: |
+        # log cilogon user info on login
+        import json
+
+        def log_auth_state(authenticator, auth_state):
+            authenticator.log.info(
+                "Login from %s",
+                json.dumps(
+                    auth_state.get("cilogon_user", "unknown!"),
+                    sort_keys=True,
+                    indent=1,
+                )
+            )
+            return auth_state
+
+        c.OAuthenticator.modify_auth_state_hook = log_auth_state
       git_env: |
         # workaround https://github.com/jupyterhub/oauthenticator/pull/820
         def modify_auth_state(authenticator, auth_state):
@@ -185,7 +201,6 @@ jupyterhub:
 
         c.CILogonOAuthenticator.auth_state_groups_key = collaboration_groups
         c.OAuthenticator.manage_groups = True
-        print(c.OAuthenticator.allowed_users)
     extraFiles:
       access:
         mountPath: /etc/jupyterhub/access.json

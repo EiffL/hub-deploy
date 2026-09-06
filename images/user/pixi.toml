@@ -1,6 +1,6 @@
 [workspace]
 authors = ["Min RK <benjaminrk@gmail.com>"]
-channels = ["conda-forge"]
+channels = ["conda-forge", "bioconda"]
 name = "user"
 platforms = ["linux-64"]
 version = "0.1.0"
@@ -19,11 +19,12 @@ altair = "*"
 jupyterlab_code_formatter = "*"
 ipywidgets = "*"
 jupyter-book = "*"
-jupyterhub-singleuser = "==5.5.0"
+# temporary: get hub prerelease from pypi
+# jupyterhub-singleuser = "5.5.0"
 jupyterlab-git = "*"
 jupyter_server_documents = "*"
 nb-cli = "*"
-nodejs = "24.*"
+nodejs = "22.*"
 pandas = "*"
 geopandas = "*"
 polars = "*"
@@ -42,6 +43,33 @@ jupyter-server-proxy = "*"
 jupyter-myst-build-proxy = "*"
 unzip = "*"
 ipycytoscape = "*"
+jupyter-vscode-proxy = "*"
+code-server = ">=4"
+jupyter-sshd-proxy = "*"
+
+# lightcone-cli dependencies
+# to get as much as we can from conda instead of pypi
+dask = "*"
+distributed = "*"
+click = "*"
+rich = "*"
+# snakemake is on bioconda
+snakemake = "*"
+snakemake-interface-executor-plugins = "*"
+rocrate = "*"
+# astra-tools
+rapidfuzz = "*"
+pypdf = "*"
+httpx = "*"
+linkml-runtime = "*"
+dask-gateway = "*"
+jupyter-launcher-shortcuts = "*"
+seaborn = "*"
+plotly = "*"
+
 
 [pypi-dependencies]
 jupyter-ai-biorouter-acp = { path = "jupyter-ai-biorouter-acp" }
+# temporary during prerelease
+jupyterhub = "==6.0.0b2"
+lightcone-cli = ">=0.4.0"

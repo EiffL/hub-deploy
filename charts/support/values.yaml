@@ -1,5 +1,9 @@
 coreNodeSelector: &coreNodeSelector
   hub.jupyter.org/node-purpose: core
+# workloads with persistent storage must go on hyperdisk-capable nodes
+persistentNodeSelector: &persistentNodeSelector
+  hub.jupyter.org/node-purpose: core
+  disk-type.gke.io/hyperdisk-balanced: "true"
 gateway:
   issuerName: letsencrypt-prod
   # need to specify each hostname individually on the gateway
@@ -13,7 +17,7 @@ gateway:
 clusterIssuer:
   enabled: true
 grafana:
-  nodeSelector: *coreNodeSelector
+  nodeSelector: *persistentNodeSelector
   grafana.ini:
     auth.anonymous:
       enabled: true
@@ -44,7 +48,7 @@ prometheus:
   rbac:
     create: true
   server:
-    nodeSelector: *coreNodeSelector
+    nodeSelector: *persistentNodeSelector
     podLabels:
       hub.jupyter.org/network-access-hub: "true"
     route:

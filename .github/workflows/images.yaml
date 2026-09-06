@@ -31,12 +31,8 @@ jobs:
         ports:
           - 5000:5000
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v6
-        with:
-          persist-credentials: false
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Should we push this image to a public registry?
@@ -62,7 +58,7 @@ jobs:
                   f.write(f"REGISTRY=localhost:5000\n")
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           tags: |
             type=ref,event=branch
@@ -71,14 +67,14 @@ jobs:
           images: ${{ env.REGISTRY }}/bids/aifutureshub/user
       - name: Login to the Container registry
         if: env.REGISTRY == 'ghcr.io'
-        uses: docker/login-action@9f4a8ea54ed9055d5f86c993e1f2ffa674f98344
+        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7 # v4.5.1
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
         id: push
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: images/user
           push: true
@@ -86,7 +82,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       - name: Generate artifact attestation
         if: env.REGISTRY == 'ghcr.io'
-        uses: actions/attest@v4
+        uses: actions/attest@v4.2.0
         with:
           subject-name: ${{ env.REGISTRY }}/bids/aifutureshub/user
           subject-digest: ${{ steps.push.outputs.digest }}

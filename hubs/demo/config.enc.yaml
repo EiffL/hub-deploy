@@ -26,6 +26,12 @@ jupyterhub:
             - ENC[AES256_GCM,data:ARbrjhtj5e4rCMo/SWHnTnZO,iv:KTxhflB8MrUbOTx+UdgysZSo+Vuen2vbKijD097Fy7c=,tag:RsD4a/Y+KyzYiM7gTPcB4A==,type:str]
             - ENC[AES256_GCM,data:UfQu+yoRgnDRWYAdAJfMDtIx9wQ=,iv:meMptDnXRJij2/JkrgetKLUqe76xbYlglmbB/JZmDp8=,tag:Y/eYTGQ4Z3n0aCxPdUBoDQ==,type:str]
             - ENC[AES256_GCM,data:hHS7I1NY4+a5D3Oz,iv:jMqKjVKQaSik2QOkJGW69rmIELrOw3CjbnkQiU4qTbI=,tag:GrQ9BV161V3eJirjMQjLNg==,type:str]
+            - ENC[AES256_GCM,data:UStwlj3aS0IG4rYHeGI5IR5u4BAw9hGa,iv:SSSviSrmoO7DnWLH8wBEgJG1JlIn06GtNidcWzBd3Og=,tag:8VY59b5woPKi0TEd/eAZPw==,type:str]
+            - ENC[AES256_GCM,data:o8iIxXN1q3PCawU0SFexHnlR4R4X31q2lQ==,iv:+9xLda1GlBm9CUiJdIgOogxP5RIUBNwoA+FmsKBtB5k=,tag:asKmnVNkaw+8EpgASbYD/A==,type:str]
+            - ENC[AES256_GCM,data:r3HVpDduhstFrQXcFaZ/6LVigQ==,iv:KsZ5cS7CF24nJC9W2nSkZB2MIot0KELJDrYG1JRRwzc=,tag:CGFH2ncuG2oGRxOqmd+5+w==,type:str]
+            - ENC[AES256_GCM,data:ZRDS0RlhLfwfM6jsnnsXhGJAEqg+WGQ=,iv:SxvUmNfP/3Can56dUj+MymG80bYJsOtgNYtIgdHVWZQ=,tag:uwt4JBtoi9ScQtoGByDJiQ==,type:str]
+            - ENC[AES256_GCM,data:5XjBkOdjWLZ48OQ4762XvwLOOSE=,iv:GB2330BSb75Z8cqARggUzyiGfLj6tdVNP0zs+4B993g=,tag:GgNooED7NvkHr6zVj1tsog==,type:str]
+            - ENC[AES256_GCM,data:Foa5aWMA1YwpRbS36wyU5XqSJQEAAxox,iv:XduJHZ4Q11468xoACUFRrHhM7pErG5N1iuuPfE9K4gk=,tag:r8MXbW7tA3dzHbmReFQMXQ==,type:str]
           collaborations:
             bids-comms:
               - ENC[AES256_GCM,data:dLNN1MtjbEHkz2bgT8vyp6h8xOM8JalqRi5rdRQ=,iv:NfppA84VDXeOObEqElJfFkzgACj2OUU1g/NVLw7LiTc=,tag:4GxPIsLE7MhKueKkEpUXbQ==,type:str]
@@ -38,8 +44,13 @@ jupyterhub:
               - ENC[AES256_GCM,data:UvS3y2lMKM9JlQLt3wQRuR0N4Vw=,iv:hNQF7cG+7cUVtNqIw7mUQ+t2Pj7HjMH+FIQMLMFCSH0=,tag:jBE1inaXiEjbAbxjH5IakA==,type:str]
             lightcone:
               - ENC[AES256_GCM,data:GY/ahUpBYS12+AY5ZX/b,iv:iJURNlsa6Axy+2Vm4qJ+ZJxb7xeJJXz8itn9OnkdGsY=,tag:ngXZmhlRaFi0g1rP2isqzQ==,type:str]
+              - ENC[AES256_GCM,data:LwDDIWdFCiuQc+FrKTK59v4=,iv:XxMLyuo6eAv731lzed9xo12rb5pEhzNHGX/PZovphAk=,tag:/NnlcsrOT7l9ubWJuNtMZg==,type:str]
               - ENC[AES256_GCM,data:DrOoGXf6D95SVPWf,iv:R20cqJFzkzxKBHLv3F73/fH1SM210BVsIfG6tuxvXo4=,tag:ZUeuyCbbxW7V1Eg+pYRjAQ==,type:str]
               - ENC[AES256_GCM,data:cXSFVFnbSDYxS9By,iv:YdxoAjuMf6dDVtbmkWTrW2lZHWP9S7wLYaJsI2E8b80=,tag:5Yrvu9Th5oWVtV+gGoa/SQ==,type:str]
+              - ENC[AES256_GCM,data:r/ENbAKUjPlPSXWodA==,iv:7aOEcLB6hwJU/SMDRn0RiG8wCi3Rv4r68J5lH60eHp8=,tag:550m/m4u3898kJ4Mgjlm8Q==,type:str]
+              - ENC[AES256_GCM,data:/MV1wJfCuX5p7pEeok9azwUG,iv:DUG7E2LQyRhHHEXphB1mEjiB6LzPokbNTQxmX/q6+dc=,tag:8kIKS+mmcp9uxBCRstIC4g==,type:str]
+              - ENC[AES256_GCM,data:xmFAXNra/YJYCAXa,iv:KxdSaWtyISZ2WWnKie4lI/njA558uA1MMjhkmXhCJHA=,tag:77sMmF+qlbMFZ8Y6wakO8Q==,type:str]
+              - ENC[AES256_GCM,data:d/S8kExFOmM6U408xEQdy/tl+FPQtA==,iv:UmhjSRzyOx+RqvR4Q9611y7qIpbrJqd8GUhbrUaeNXo=,tag:ldVW4KzuMp8SXd/pg8HFTQ==,type:str]
   proxy:
     secretToken: ENC[AES256_GCM,data:3QKrgCSyP6Wr17HB79aoy+VK1RbQhtNujm2dVy59HFsszl210D4Z3auoVcWrM/oMR1T0wRm33feJT96loLTyYio=,iv:A1KgOt0mhNAt6VVN4OMfRcDp7kYq37yn6ji29T+p60M=,tag:rAI3Cp0720E6H1gkmBkVdg==,type:str]
   singleuser:
@@ -50,7 +61,7 @@ sops:
     - created_at: "2025-10-21T23:38:24Z"
       enc: CiQANyKZ8JQe1adKWAUM5Zj4Zevua+ecZ/Yaa7QpDmaXBxll760SSQDUA4fNrJIcn6X07JCvjVXPvk35izob3ftA9ZLIIjYjwoYdBBNEuphU0KWlJFsuLktZMbk5PJKLhmuhZ9zgy3TN9MHsmvUEUsk=
       resource_id: projects/bids-jupyterhub/locations/global/keyRings/sops/cryptoKeys/sops-key
-  lastmodified: "2026-07-09T15:18:34Z"
-  mac: ENC[AES256_GCM,data:XNOUBwz4yYnam0/GWu5egpaem3jPLQGphaJtMLqO26Ctd9WqeZ+xCSy2Jec/JD0uSMejD3acztM6sfu9cws71lHrr5cBH6GPFgyJMFR3JZUhZgWV8S5L8JR+QyrUd2FVSlvjLTRnQTwkmaq25XedXFZH4ys1DcEhWyZIm+U1ttQ=,iv:BwV2UDkzpxo6YQ6rgU9rpFBbkPhOUC+12+evK9qJd/A=,tag:ClFQGey7O6yaMGi1hsBLJA==,type:str]
+  lastmodified: "2026-09-03T19:28:41Z"
+  mac: ENC[AES256_GCM,data:f3QkRp8axKIGmxH+AEPg5pXY2nFayjbOBGCpa19lqbbg41HD2ZBBLxwiFxH/1x+Bb5A85mkIAXH1ktr+LGGKhNaVzBHGF8nMNoTTt/U0nopAtvjveLO2OIvh8bgMjWyepZnRpKcKWSZ+0HApF6dkyo/ycQnWc9vrrL2T9PBR5/Q=,iv:me6W8w/MaBVJhbZcHQtNtvhB2XHJthaTSF1Z8cT8Feo=,tag:kKIHtN3/riwCNtjGX4OSrg==,type:str]
   unencrypted_suffix: _unencrypted
-  version: 3.13.2
+  version: 3.13.3

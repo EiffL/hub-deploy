@@ -5,8 +5,12 @@ version: "0.0.0"
 kubeVersion: ">= 1.32.0-0"
 dependencies:
   - name: jupyterhub
-    version: "4.4.0"
+    version: "5.0.0-0.dev.git.7487.hf961cb60"
     repository: "https://jupyterhub.github.io/helm-chart"
   - name: jupyterhub-home-nfs
     version: "1.2.0"
     repository: oci://ghcr.io/2i2c-org/jupyterhub-home-nfs
+  - name: dask-gateway
+    version: "2026.3.0"
+    repository: "https://helm.dask.org"
+    condition: dask-gateway.enabled

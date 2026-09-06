@@ -1,4 +1,6 @@
 FROM ghcr.io/prefix-dev/pixi:0.68.1 AS build
+# git needed for dev lightcone
+RUN pixi global install git
 
 # copy source code, pixi.toml and pixi.lock to the container
 COPY pixi* /srv/
@@ -19,6 +21,7 @@ RUN apt-get update \
         ca-certificates \
         git \
         nano \
+        openssh-server \
         procps \
         vim \
         wget \
@@ -33,9 +36,10 @@ COPY mambarc /srv/.pixi/envs/default/.condarc
 
 ENV PYTHONUNBUFFERED=1 \
     MAMBA_ROOT_PREFIX=/srv/.pixi/envs/default \
-    PATH=/srv/.pixi/envs/default:$PATH \
+    PATH=/srv/.pixi/envs/default/bin:$PATH:/usr/sbin \
     SHELL=/usr/bin/bash
 WORKDIR /home/jovyan
+RUN chsh jovyan --shell /bin/bash
 USER $UID
 
 ENTRYPOINT ["/entrypoint.sh"]

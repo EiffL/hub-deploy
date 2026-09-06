@@ -46,6 +46,14 @@ resource "google_compute_network" "vpc" {
 }
 
 resource "google_container_cluster" "cluster" {
+  # Workload Identity: lets pods obtain namespace-scoped GCP identities
+  # from the metadata server (used for keyless Cloud Build submission
+  # and registry probing by lightcone-cli). Direct IAM grants target
+  # principalSet://…/namespace/<ns> principals — no per-KSA GSAs.
+  workload_identity_config {
+    workload_pool = "${data.google_client_config.provider.project}.svc.id.goog"
+  }
+
   name     = var.name
   location = local.location
   release_channel {
@@ -53,6 +61,18 @@ resource "google_container_cluster" "cluster" {
   }
 
   network = google_compute_network.vpc.name
+
+  # enable network policy with calico
+  network_policy {
+    enabled  = true
+    provider = "CALICO"
+  }
+
+  addons_config {
+    network_policy_config {
+      disabled = false
+    }
+  }
 
   # terraform recommends removing the default node pool
   remove_default_node_pool = true
@@ -75,9 +95,48 @@ resource "google_container_cluster" "cluster" {
   }
 }
 
-# define node pools here, too hard to encode with variables
-resource "google_container_node_pool" "core" {
-  name     = "core-2025-10"
+
+resource "google_container_node_pool" "core-2608" {
+  name     = "core-e-202608"
+  cluster  = google_container_cluster.cluster.name
+  location = local.location # location of *cluster*
+  # node_locations lets us specify a single-zone regional cluster:
+  node_locations = [local.zone]
+
+  lifecycle {
+    ignore_changes = [node_count]
+  }
+
+  autoscaling {
+    min_node_count = 0
+    max_node_count = 3
+  }
+  node_count = 1
+
+  node_config {
+    machine_type = "e2-medium"
+    disk_size_gb = 30
+    disk_type    = "pd-balanced"
+
+    # Required with Workload Identity: the GKE metadata server hands
+    # pods their namespace identity instead of the node SA.
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
+
+    labels = {
+      "hub.jupyter.org/node-purpose" = "core"
+    }
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    service_account = google_service_account.sa["gke-node"].email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+}
+
+resource "google_container_node_pool" "core-2608-hyperdisk" {
+  name     = "core-n4d-202608"
   cluster  = google_container_cluster.cluster.name
   location = local.location # location of *cluster*
   # node_locations lets us specify a single-zone regional cluster:
@@ -94,9 +153,15 @@ resource "google_container_node_pool" "core" {
   node_count = 1
 
   node_config {
-    machine_type = "e2-highmem-2"
-    disk_size_gb = 50
-    disk_type    = "pd-balanced"
+    machine_type = "n4d-standard-2"
+    disk_size_gb = 30
+    disk_type    = "hyperdisk-balanced"
+
+    # Required with Workload Identity: the GKE metadata server hands
+    # pods their namespace identity instead of the node SA.
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
 
     labels = {
       "hub.jupyter.org/node-purpose" = "core"
@@ -158,7 +223,7 @@ output "service_accounts" {
     for sa_name in keys(local.service_accounts) :
     sa_name => google_service_account.sa[sa_name].email
   }
-  sensitive = true
+  sensitive = false
 }
 
 resource "google_compute_disk" "nfs" {

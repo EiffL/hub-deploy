@@ -13,12 +13,11 @@ spec:
     server: home-nfs.{{ .Release.Namespace }}.svc.cluster.local
     path: /
   mountOptions:
-    - rsize=1048576
-    - wsize=1048576
-    - timeo=600
-    - soft # We pick soft over hard, so NFS lockups don't lead to hung processes
-    - retrans=2
-    - noresvport
+    # copy pasta from 2i2c deployment
+    # note: this is their gcp config,
+    # while they use different defaults on aws
+    - soft
+    - noatime
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

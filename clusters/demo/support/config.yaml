@@ -1,5 +1,3 @@
-coreNodeSelector: &coreNodeSelector
-  hub.jupyter.org/node-purpose: core
 gateway:
   # need to specify each hostname individually on the gateway
   # for cert-manager
@@ -16,7 +14,6 @@ gateway:
             cloud.google.com/l4-rbs: "enabled"
             networking.gke.io/load-balancer-ip-addresses: "demo-ingress"
 grafana:
-  nodeSelector: *coreNodeSelector
   grafana.ini:
     auth.anonymous:
       enabled: true
