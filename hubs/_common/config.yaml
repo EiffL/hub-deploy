@@ -1,5 +1,11 @@
 jupyterhub:
   hub:
+    loadRoles:
+      user:
+        scopes:
+          - self
+          # grant users access to services
+          - access:services
     config:
       Authenticator:
         enable_auth_state: true
@@ -58,6 +64,9 @@ jupyterhub:
         scope:
           - "user:email"
           - "read:org"
+      Spawner:
+        server_token_scopes:
+          - access:services!service=dask-gateway
     extraConfig:
       team_groups: |
         def access_team_groups(auth_state):
@@ -206,6 +215,16 @@ jupyterhub:
         mountPath: /etc/jupyterhub/access.json
         # data in each hub's config.enc.yaml
   singleuser:
+    # serviceAccountName (dedicated KSA for workload identity) is set per hub
+    cloudMetadata:
+      # needed for workload identity
+      blockWithIptables: false
+    memory:
+      limit: 4G
+      guarantee: 2G
+    cpu:
+      limit: 1
+      guarantee: 0.5
     image:
       name: ghcr.io/bids/aifutureshub/user
       tag: main
@@ -235,7 +254,89 @@ jupyterhub:
       # XDG_CACHE_DIR: "/tmp/cache"
       SHELL: /bin/bash
       OPENCODE_CONFIG: /etc/opencode-default/opencode.json
+      # hosted openai config
+      OPENAI_HOST: https://ellm.nrp-nautilus.io
+      BIOROUTER_PROVIDER: nrp
+      BIOROUTER_MODEL: gpt-oss
+      # lightcone-cli image-build contract (tf/modules/lightcone): LIGHTCONE_REGISTRY,
+      # LIGHTCONE_BUILD_BUCKET and LIGHTCONE_BUILD_SERVICE_ACCOUNT are set per hub
+      # dask gateway; DASK_GATEWAY__ADDRESS and DASK_GATEWAY__PROXY_ADDRESS are set
+      # per hub (the service is named traefik-<hub>-dask-gateway)
+      DASK_GATEWAY__AUTH__TYPE: jupyterhub
+      DASK_GATEWAY__PUBLIC_ADDRESS: /services/dask-gateway/
+      DASK_GATEWAY__CLUSTER__OPTIONS__IMAGE: ghcr.io/bids/aifutureshub/user:main
+    networkPolicy:
+      egress:
+        # Allow user pods to reach the dask-gateway traefik proxy: dask
+        # clients dial scheduler comms through it (gateway:// scheme on
+        # port 80).
+        - to:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/component: gateway
+                  app.kubernetes.io/name: dask-gateway
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/component: traefik
+                  app.kubernetes.io/name: dask-gateway
     extraFiles:
+      sshEnv:
+        mountPath: /etc/profile.d/ssh-env.sh
+        # inherit env from PID 1 for ssh sessions
+        # this way we get our Jupyter env set on SSH login sessions
+        stringData: |
+          if [ ! -z "$SSH_CONNECTION" ]; then
+            source <(
+              cat /proc/1/environ | while IFS='' read -r -d $'\0' line ; do echo "export '$line'" ; done
+            )
+          fi
+      biorouterNRP:
+        mountPath: /home/jovyan/.config/biorouter/custom_providers/nrp.json
+        data:
+          name: nrp
+          engine: openai
+          display_name: NRP
+          description: NRP Nautilus
+          api_key_env: OPENAI_API_KEY
+          base_url: https://ellm.nrp-nautilus.io/v1
+          models:
+            - name: qwen3
+              context_limit: 1000000
+            - name: qwen3-small
+              context_limit: 1000000
+            - name: gpt-oss
+              context_limit: 131072
+            - name: gemma
+              context_limit: 262144
+            - name: gemma-small
+              context_limit: 262144
+            - name: kimi
+              context_limit: 131072
+            - name: glm-5
+              context_limit: 1048576
+            - name: dedepseek-v4-flash
+              context_limit: 1048576
+            - name: minimax-m2
+              context_limit: 204800
+          supports_streaming: true
+      server_config:
+        mountPath: "/usr/local/etc/jupyter/jupyter_server_config.py"
+        stringData: |
+          import os
+          public_url = os.environ["JUPYTERHUB_PUBLIC_URL"]
+          print(f"{public_url=}")
+
+          biorouter_url = f"{public_url.rstrip('/')}/biorouter/"
+
+          c.ServerProxy.servers = {
+              # vscode already enabled via package
+              # "vscode": {
+              #     "command": ["code-server", "--auth", "none", "--disable-telemtry", "--port={port}"],
+              # },
+              "biorouter": {
+                  "command": ["biorouter-headless", "serve", "--port={port}", "--public-url", biorouter_url],
+              },
+          }
       opencode:
         mountPath: /etc/opencode-default/opencode.json
         data:
@@ -289,3 +390,159 @@ jupyterhub-home-nfs:
     # disable broken quota enforcer
     enabled: false
     hardQuota: "10" # in GiB
+# ---- lightcone-cli compute -------------------------------------------------
+# Auth rides JupyterHub (token pairing is automatic via the z2jh `hub`
+# secret). The gateway config below stays close to a stock 2i2c daskhub:
+# standard image/worker_cores/worker_memory/environment cluster options.
+# lightcone-cli provisions its own worker env (resource advertisement,
+# USER/LOGNAME/HOME, provenance image ref) through the `environment`
+# option; the one deployment-specific piece is mounting each user's own
+# home in scheduler/worker pods at the notebook's path.
+dask-gateway:
+  # must apply CRDs
+  # kubectl apply -f https://raw.githubusercontent.com/dask/dask-gateway/2026.1.0/resources/helm/dask-gateway/crds/daskclusters.yaml
+  enabled: true
+  gateway:
+    prefix: /services/dask-gateway
+    auth:
+      type: jupyterhub
+    backend:
+      scheduler:
+        extraPodConfig:
+          # Pin to the user node pool (like z2jh singleuser pods). Dask
+          # pods are created by KubeBackend, not z2jh, so they don't
+          # inherit its matchNodePurpose affinity; without this they can
+          # land on the core node alongside the hub/proxy. No toleration
+          # needed — the pools carry labels, not taints.
+          nodeSelector:
+            hub.jupyter.org/node-purpose: dask
+          volumes:
+            - name: home
+              persistentVolumeClaim:
+                claimName: home-nfs-mount
+        extraContainerConfig:
+          imagePullPolicy: Always # mutable tags (e.g. :main) must not go stale
+          # Project images are environment-agnostic (no USER baked in,
+          # image builds run as root). Pod identity is deployment
+          # config: run cluster pods as the notebook uid so everything
+          # written to the NFS home stays user-owned. No passwd entry
+          # is needed — lc provisions USER/LOGNAME/HOME into the pods
+          # via the `environment` cluster option, which keeps
+          # getpass.getuser() (snakemake startup) working.
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      worker:
+        extraPodConfig:
+          nodeSelector:
+            hub.jupyter.org/node-purpose: dask
+          volumes:
+            - name: home
+              persistentVolumeClaim:
+                claimName: home-nfs-mount
+        extraContainerConfig:
+          imagePullPolicy: Always
+          securityContext: # user-owned outputs; see scheduler note
+            runAsUser: 1000
+            runAsGroup: 1000
+    extraConfig:
+      hub_auth: |
+        c.JupyterHubAuthenticator.jupyterhub_service_name = "dask-gateway"
+      lightcone: |
+        from dask_gateway_server.options import Options, Integer, Float, Mapping, String
+        from traitlets.log import get_logger
+
+        # Chart-values container config (imagePullPolicy above). Handler-
+        # returned fields REPLACE the KubeClusterConfig traitlets, so
+        # capture the base here and extend.
+        _worker_ct = dict(c.KubeClusterConfig.worker_extra_container_config)
+        _scheduler_ct = dict(c.KubeClusterConfig.scheduler_extra_container_config)
+
+        def _with_home(container_config, username):
+            # Mount the requesting user's OWN home (subPath = their
+            # directory only, never the whole export) at /home/jovyan —
+            # the same path as the notebook pod, so dask tasks see
+            # identical absolute paths. subPath matches z2jh's storage
+            # subPath "{unescaped_username}".
+            if username.startswith("user:"):
+                # dask gateway applies `user:` to usernames that contain a colon,
+                # to avoid collisions,
+                # which github usernames do in our deployment.
+                # get the 'true' username back.
+                username = username.partition(":")[2]
+            mounts = list(container_config.get("volumeMounts", [])) + [
+                {"name": "home", "mountPath": "/home/jovyan", "subPath": username},
+            ]
+            return {**container_config, "volumeMounts": mounts}
+
+        def options_handler(options, user):
+            # Stock daskhub shape: cores/memory/image/environment pass
+            # straight through. Everything lightcone-specific (worker
+            # resource advertisement, USER/LOGNAME/HOME for passwd-less
+            # images, LIGHTCONE_WORKER_IMAGE provenance) is provisioned
+            # by `lc run` itself through the standard `environment`
+            # option — the only deployment-specific piece left is the
+            # per-user home mount below.
+            log = get_logger()
+
+            handled_options = {
+                "worker_cores": options.worker_cores,
+                "worker_memory": f"{options.worker_memory:.2f}G",
+                "image": options.image,
+                "worker_extra_container_config": _with_home(_worker_ct, user.name),
+                "scheduler_extra_container_config": _with_home(_scheduler_ct, user.name),
+                "environment": options.environment,
+            }
+            # allow over-subscribing CPU
+            # try to match node flavor ratio (4:1 standard, 8:1 highmem, 2:1 highcpu)
+            mem_cpu_ratio = 4
+            core_limit = options.worker_cores
+            cpu_per_mem = options.worker_memory / mem_cpu_ratio
+            if core_limit > 1 and core_limit > cpu_per_mem:
+                # if asking for a high cpu:memory ratio, oversubscribed cpu
+                # use requested worker_cores as the limit and threads, but not the request
+                # for request, use highest of:
+                # - node native cpu:memory ratio
+                # - half limit (requesting 4 cpu will never reserve less than 2)
+                # - 1 (never less than a full cpu)
+
+                scaled_cores = max(
+                    cpu_per_mem,
+                    core_limit / 2,
+                    1,
+                )
+                log.info("oversubscribing cpu=%.1f/%.1f for mem=%.1fG", scaled_cores, core_limit, options.worker_memory)
+                handled_options["worker_cores_limit"] = core_limit
+                handled_options["worker_threads"] = max(round(core_limit), 1)
+                handled_options["worker_cores"] = scaled_cores
+
+            return handled_options
+
+        c.Backend.cluster_options = Options(
+            Integer("worker_cores", default=2, min=1, max=8, label="Worker cores"),
+            Float("worker_memory", default=4, min=1, max=16, label="Worker memory (GB)"),
+            # Server-side fallback only: clients send their own notebook
+            # image via DASK_GATEWAY__CLUSTER__OPTIONS__IMAGE (see the
+            # jupyterhub extraConfig above).
+            String("image", default="ghcr.io/bids/aifutureshub/user:main", label="Worker image"),
+            Mapping("environment", default={}, label="Environment variables"),
+            handler=options_handler,
+        )
+
+        # Reap clusters orphaned by a crashed client; `lc run` shuts its
+        # own cluster down on exit.
+        c.KubeClusterConfig.idle_timeout = 1800
+
+        # Modern dask/distributed removed the legacy `dask-scheduler` /
+        # `dask-worker` console scripts (gone in e.g. distributed
+        # 2026.7.x, which lightcone project images carry); the chart
+        # default still execs them, so scheduler pods die at exec with
+        # "executable file not found". The `dask scheduler` / `dask
+        # worker` subcommands exist since 2022.10 and take the same
+        # flags (incl. --preload arg passthrough), so this is safe for
+        # any plausible image.
+        c.KubeClusterConfig.scheduler_cmd = ["dask", "scheduler"]
+        c.KubeClusterConfig.worker_cmd = ["dask", "worker"]
+  traefik:
+    service:
+      type: ClusterIP # reached via the hub proxy / in-cluster only
