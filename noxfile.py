@@ -128,6 +128,7 @@ def helm_hub(session):
         "helm",
         "upgrade",
         "--install",
+        "--create-namespace",
         "--namespace",
         hub_name,
         hub_name,

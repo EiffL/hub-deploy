@@ -3,6 +3,14 @@ jupyterhub:
     hostnames:
       - hub.lightconeresearch.org
   hub:
+    # Persistent workloads are pinned to hyperdisk-capable core nodes
+    # (persistentNodeSelector in charts/hub). The cluster default storage
+    # class (standard-rwo, pd-balanced) cannot attach to those nodes; use
+    # the auto-balanced class from charts/support instead.
+    db:
+      pvc:
+        storageClassName: auto-balanced
+        storage: 4Gi # hyperdisk-balanced minimum
     services:
       dask-gateway:
         url: http://traefik-lightcone-dask-gateway

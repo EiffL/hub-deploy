@@ -14,6 +14,11 @@ gateway:
             cloud.google.com/l4-rbs: "enabled"
             networking.gke.io/load-balancer-ip-addresses: "lightcone-ingress"
 grafana:
+  # pinned to hyperdisk core nodes (persistentNodeSelector in charts/support):
+  # the cluster default pd-balanced class cannot attach there
+  persistence:
+    storageClassName: auto-balanced
+    size: 4Gi # hyperdisk-balanced minimum
   grafana.ini:
     auth.anonymous:
       enabled: true
@@ -37,6 +42,8 @@ grafana:
           editable: false
 prometheus:
   server:
+    persistentVolume:
+      storageClass: auto-balanced
     route:
       main:
         hostnames:

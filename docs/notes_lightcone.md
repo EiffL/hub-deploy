@@ -13,13 +13,10 @@ builds through Workload Identity (`tf/modules/lightcone`), same as the demo hub.
 
 ## Status
 
-The deployment was torn down on 2026-07-30 (`tofu destroy`, then the state
-buckets were deleted). The sops KMS key version was scheduled for destruction
-on 2026-08-29, after which the existing `*.enc.yaml` files under
-`clusters/lightcone/` and `hubs/lightcone/` cannot be decrypted. Redeploying
-means redoing the one-time setup below (restore the key version if still
-possible, otherwise create a new key) and re-creating every secret and the
-kubeconfig.
+Torn down on 2026-07-30 and redeployed from scratch on 2026-09-07. The sops
+KMS key is on version 2 (version 1 was destroyed, so anything encrypted before
+2026-09-07 is unreadable); the state bucket was recreated. There is currently
+no NRP Nautilus key, so opencode/biorouter are configured but unusable.
 
 ## One-time setup
 
@@ -40,7 +37,27 @@ gcloud storage buckets update gs://tf-state-lightconehub --versioning
 
 ## Deployment steps
 
-1. Create the cluster with OpenTofu (`tf/clusters/lightcone`):
+Tooling: `nox`, `tofu`, `helm`, `kubectl`, `sops`, and `gcloud` with the
+`gke-gcloud-auth-plugin`. OpenTofu and sops authenticate with Application
+Default Credentials (`gcloud auth application-default login`), which are
+separate from the plain `gcloud auth login`; for a single session,
+`export GOOGLE_OAUTH_ACCESS_TOKEN=$(gcloud auth print-access-token)` works too.
+The chart dependencies need these helm repos once:
+
+```
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart
+helm repo add dask https://helm.dask.org
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+```
+
+The nox sessions default to `HUB_NAME=demo` and decrypt that hub's secrets
+(BIDS key) before doing anything, so always set both
+`CLUSTER_NAME=lightcone HUB_NAME=lightcone`. They also decrypt every
+`*.enc.*` file under `clusters/lightcone/` and `hubs/lightcone/`, so those
+files must be valid before running any helm session.
+
+1. Create the cluster with OpenTofu (`tf/clusters/lightcone`), about 15 minutes:
 
    ```
    CLUSTER_NAME=lightcone nox -s tofu -- init
@@ -62,7 +79,7 @@ gcloud storage buckets update gs://tf-state-lightconehub --versioning
    `tf/modules/gke_cluster` (`persistentNodeSelector` in `charts/hub` and
    `charts/support`), and those machines cannot attach `pd-*` disks. `n4d`
    machine types and Hyperdisk Balanced must therefore be available in the
-   zone.
+   zone (they are in `europe-west1-b`).
 
 1. Get credentials for the new cluster and store them encrypted:
 
@@ -81,11 +98,26 @@ gcloud storage buckets update gs://tf-state-lightconehub --versioning
    cert-manager issues the Let's Encrypt certificates automatically once the
    records resolve.
 
+1. Hub secrets: write `hubs/lightcone/config.dec.yaml` (gitignored) with the
+   GitHub app client id/secret (callback URL
+   `https://hub.lightconeresearch.org/hub/oauth_callback`), a cookie secret
+   and a CryptKeeper key (`openssl rand -hex 32` each), and the `access.json`
+   data; optionally `jupyterhub.singleuser.extraEnv.OPENAI_API_KEY` for
+   opencode/biorouter (see `hubs/demo/config.enc.yaml` for the shape). Then:
+
+   ```
+   sops encrypt hubs/lightcone/config.dec.yaml --output hubs/lightcone/config.enc.yaml
+   ```
+
+   Do this before the helm sessions below; they refuse to run with an
+   undecryptable `config.enc.yaml`. Do not overwrite an existing
+   `config.dec.yaml` without checking it: it may be the only readable copy.
+
 1. Deploy the support chart (gateway, grafana, prometheus):
 
    ```
-   CLUSTER_NAME=lightcone nox -s helm_support_upgrade_crds
-   CLUSTER_NAME=lightcone nox -s helm_support
+   CLUSTER_NAME=lightcone HUB_NAME=lightcone nox -s helm_support_upgrade_crds
+   CLUSTER_NAME=lightcone HUB_NAME=lightcone nox -s helm_support
    ```
 
 1. Apply the dask-gateway CRDs (helm does not install or upgrade a subchart's
@@ -96,39 +128,42 @@ gcloud storage buckets update gs://tf-state-lightconehub --versioning
    KUBECONFIG=clusters/lightcone/kubeconfig.dec.yaml kubectl apply -f https://raw.githubusercontent.com/dask/dask-gateway/2026.3.0/resources/helm/dask-gateway/crds/daskclusters.yaml
    ```
 
-1. Deploy the hub:
+1. Deploy the hub (helm creates the `lightcone` namespace):
 
    ```
    CLUSTER_NAME=lightcone HUB_NAME=lightcone nox -s helm_hub
    ```
 
+1. Once after the first NFS deploy: the export root on a fresh disk is owned by
+   root, but the ganesha export squashes all clients to uid 1000, so the kubelet
+   cannot create user home subdirectories. Fix from the nfs-server container:
+
+   ```
+   KUBECONFIG=clusters/lightcone/kubeconfig.dec.yaml kubectl exec -n lightcone deploy/home-nfs -c nfs-server -- chown 1000:1000 /export
+   ```
+
+1. Commit the new `kubeconfig.enc.yaml` and `config.enc.yaml`.
+
 ## Notes
 
-- One-time after first NFS deploy: the export root on a fresh disk is owned by
-  root, but the ganesha export squashes all clients to uid 1000, so the kubelet
-  cannot create user home subdirectories. Fix from the nfs-server container:
-
-  ```
-  kubectl exec -n lightcone deploy/home-nfs -c nfs-server -- chown 1000:1000 /export
-  ```
-
+- Persistent volumes: the hub database, grafana and prometheus claims use the
+  `auto-balanced` storage class from `charts/support` with at least 4Gi (set in
+  `hubs/lightcone/config.yaml` and `clusters/lightcone/support/config.yaml`).
+  The cluster default class (`standard-rwo`, pd-balanced) cannot attach to the
+  hyperdisk-only `n4d` nodes those pods are pinned to, and Hyperdisk Balanced
+  volumes cannot be smaller than 4 GB. A claim created with the wrong class or
+  size has to be deleted and recreated; its spec is immutable.
 - Everything shared lives in `hubs/_common/config.yaml` (authenticators, user
   image, resources, opencode/biorouter, ssh env, dask-gateway) and in
   `tf/modules/gke_cluster` / `tf/modules/lightcone`. `hubs/lightcone/config.yaml`
   only carries the hostname-derived values, the NFS `volumeId`, the user
-  service account name, and the Cloud Build / dask-gateway names that depend on
-  the project and release name (`traefik-lightcone-dask-gateway`).
-- Hub secrets: edit `hubs/lightcone/config.dec.yaml` (gitignored), then
-  `sops encrypt hubs/lightcone/config.dec.yaml --output hubs/lightcone/config.enc.yaml`.
-  The GitHub app's authorization callback URL must be
-  `https://hub.lightconeresearch.org/hub/oauth_callback`.
-  Besides the GitHub client id/secret, cookie secret, CryptKeeper keys and
-  `access.json` data, the file needs
-  `jupyterhub.singleuser.extraEnv.OPENAI_API_KEY` (NRP Nautilus key used by
-  opencode and biorouter through `OPENAI_HOST` in `_common`), as in
-  `hubs/demo/config.enc.yaml`.
+  service account name, the storage class, and the Cloud Build / dask-gateway
+  names that depend on the project and release name
+  (`traefik-lightcone-dask-gateway`).
 - The collaboration-groups wiring in `_common` is cilogon-specific;
   collaborations in `access.json` won't create github-auth groups without
   extra config.
-- KMS keyrings/keys cannot be deleted, only key versions destroyed.
+- KMS keyrings/keys cannot be deleted, only key versions destroyed. Destroying
+  the version that encrypted the `*.enc.*` files makes them unrecoverable, so
+  keep a readable copy of the secrets somewhere safe before tearing down.
 - Tear-down order: `tofu destroy` first, delete the state bucket last.
