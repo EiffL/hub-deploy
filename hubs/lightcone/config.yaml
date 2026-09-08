@@ -3,6 +3,10 @@ jupyterhub:
     hostnames:
       - hub.lightconeresearch.org
   hub:
+    services:
+      dask-gateway:
+        url: http://traefik-lightcone-dask-gateway
+        display: false
     config:
       JupyterHub:
         authenticator_class: github
@@ -15,6 +19,19 @@ jupyterhub:
         # Berkeley-specific, override it away here
         allowed_organizations: []
         admin_groups: []
+  singleuser:
+    # match lightcone.user_service_account in tf/clusters/lightcone/main.tf
+    serviceAccountName: lightcone-hub-user
+    extraEnv:
+      # lightcone-cli image-build contract (tf/modules/lightcone/cloudbuild.tf):
+      # content-addressed project images are built by GCP Cloud Build from
+      # a staged-context tarball (no git involved) and pushed here.
+      LIGHTCONE_REGISTRY: europe-west1-docker.pkg.dev/lightconehub/lightcone-cloudbuild-images
+      LIGHTCONE_BUILD_BUCKET: lightconehub-lightcone-lc-build
+      LIGHTCONE_BUILD_SERVICE_ACCOUNT: lightcone-lc-build@lightconehub.iam.gserviceaccount.com
+      # dask gateway
+      DASK_GATEWAY__ADDRESS: http://traefik-lightcone-dask-gateway/services/dask-gateway
+      DASK_GATEWAY__PROXY_ADDRESS: gateway://traefik-lightcone-dask-gateway:80
 jupyterhub-home-nfs:
   gke:
     volumeId: projects/lightconehub/zones/europe-west1-b/disks/hub-nfs-lightcone
