@@ -15,8 +15,10 @@ builds through Workload Identity (`tf/modules/lightcone`), same as the demo hub.
 
 Torn down on 2026-07-30 and redeployed from scratch on 2026-09-07. The sops
 KMS key is on version 2 (version 1 was destroyed, so anything encrypted before
-2026-09-07 is unreadable); the state bucket was recreated. There is currently
-no NRP Nautilus key, so opencode/biorouter are configured but unusable.
+2026-09-07 is unreadable); the state bucket was recreated. opencode is configured
+for the OpenAI API (default `openai/gpt-5.6-sol`); the OpenAI key is in
+`config.enc.yaml` as `OPENAI_API_KEY`. biorouter still points at NRP Nautilus
+and is unusable without an NRP key.
 
 ## One-time setup
 
@@ -102,8 +104,8 @@ files must be valid before running any helm session.
    GitHub app client id/secret (callback URL
    `https://hub.lightconeresearch.org/hub/oauth_callback`), a cookie secret
    and a CryptKeeper key (`openssl rand -hex 32` each), and the `access.json`
-   data; optionally `jupyterhub.singleuser.extraEnv.OPENAI_API_KEY` for
-   opencode/biorouter (see `hubs/demo/config.enc.yaml` for the shape). Then:
+   data; and `jupyterhub.singleuser.extraEnv.OPENAI_API_KEY`, an OpenAI API
+   key used by opencode (see `hubs/demo/config.enc.yaml` for the shape). Then:
 
    ```
    sops encrypt hubs/lightcone/config.dec.yaml --output hubs/lightcone/config.enc.yaml
