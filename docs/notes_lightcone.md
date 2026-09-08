@@ -148,9 +148,9 @@ files must be valid before running any helm session.
 
 ## Notes
 
-- Theme: the hub pages are branded as Lightcone Lab from
-  `charts/hub/files/themes/lightcone/` (`page.html`, `login.html`,
-  `lightcone.css`, logos from the website), packed into the `hub-theme`
+- Theme: the hub pages keep JupyterHub's layout but use the Lightcone colours,
+  type and mark, from `charts/hub/files/themes/lightcone/` (`page.html`,
+  `lightcone.css`, `logo.svg` from the website), packed into the `hub-theme`
   ConfigMap by `charts/hub/templates/hub-theme.yaml` and enabled with
   `hubTheme: lightcone` plus the volume mounts in `hubs/lightcone/config.yaml`.
   Colours and type follow the brand package (`../brand`); fonts load from

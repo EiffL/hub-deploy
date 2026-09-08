@@ -1,4 +1,5 @@
-/* Lightcone Lab theme for the JupyterHub pages (JupyterHub 6, Bootstrap 5.3).
+/* Lightcone theme for the JupyterHub pages (JupyterHub 6, Bootstrap 5.3):
+ * colours and type only; JupyterHub's own layout and pages are kept.
  * Palette, semantic roles and type stacks follow the Lightcone Research brand
  * package (github.com/LightconeResearch/brand: tokens.css, themes.css).
  * Fonts are loaded from Google Fonts in page.html, as on lightconeresearch.org. */
@@ -132,9 +133,6 @@ body {
   font-family: var(--lc-font-body);
   color: var(--lc-color-text);
   background: var(--lc-color-canvas);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6,
@@ -174,31 +172,6 @@ code, pre, kbd, samp { font-family: var(--lc-font-mono); }
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
-
-#jupyterhub-logo { margin-left: 0.5rem; }
-
-.lc-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-}
-#jupyterhub-logo .lc-brand-mark.jpy-logo {
-  height: 34px;
-  width: auto;
-  margin: 0;
-}
-.lc-brand-name {
-  font-family: var(--lc-font-heading);
-  font-weight: 700;
-  font-size: 1.05rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  line-height: 1;
-  white-space: nowrap;
-}
-.lc-brand-name-primary { color: var(--lc-color-gold); }
-.lc-brand-name-secondary { color: var(--lc-color-accent); }
 
 .navbar .nav-link,
 .navbar #login_widget {
@@ -335,75 +308,3 @@ code, pre, kbd, samp { font-family: var(--lc-font-mono); }
 
 .table { --bs-table-bg: transparent; --bs-table-color: var(--lc-color-text); font-family: var(--lc-font-ui); }
 .card { background: var(--lc-color-surface); border: 1px solid var(--lc-color-border); border-radius: 0; }
-
-/* ---- Login --------------------------------------------------------------- */
-
-#login-main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: auto;
-  min-height: 70vh;
-  padding: 2rem 1rem;
-}
-
-.lc-login {
-  width: 100%;
-  max-width: 26rem;
-  margin: 0 auto;
-  padding: 3rem 2.5rem 2.5rem;
-  text-align: center;
-  background: var(--lc-color-surface);
-  border: 1px solid var(--lc-color-border-strong);
-}
-.lc-login-mark {
-  height: 84px;
-  width: auto;
-  margin-bottom: 1.5rem;
-}
-.lc-login-title {
-  font-family: var(--lc-font-heading);
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--lc-color-gold-strong);
-  margin-bottom: 0.5rem;
-}
-.lc-login-tagline {
-  font-family: var(--lc-font-body);
-  font-style: italic;
-  font-size: 1.1rem;
-  color: var(--lc-color-text-muted);
-  margin-bottom: 2rem;
-}
-.lc-login-button {
-  display: block;
-  width: 100%;
-  padding: 0.85rem 1rem;
-}
-.lc-login-footnote {
-  margin: 1.75rem 0 0;
-  font-family: var(--lc-font-ui);
-  font-size: 0.9rem;
-  color: var(--lc-color-text-subtle);
-}
-
-/* ---- Footer -------------------------------------------------------------- */
-
-.lc-footer {
-  margin-top: auto;
-  padding: 1.5rem 1.5rem 1.25rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  border-top: 1px solid var(--lc-color-border);
-  font-family: var(--lc-font-ui);
-  font-size: 0.85rem;
-  color: var(--lc-color-text-subtle);
-}
-.lc-footer-brand img { height: 22px; width: auto; opacity: 0.9; }
-[data-bs-theme="dark"] .lc-footer-brand img { filter: brightness(1.35); }
-.lc-footer-note a { color: var(--lc-color-text-muted); }

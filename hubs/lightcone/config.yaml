@@ -1,4 +1,4 @@
-# Lightcone Lab theme for the hub pages (charts/hub/files/themes/lightcone,
+# Lightcone colours and type for the hub pages (charts/hub/files/themes/lightcone,
 # packed into the hub-theme ConfigMap by charts/hub/templates/hub-theme.yaml)
 hubTheme: lightcone
 jupyterhub:
@@ -26,6 +26,7 @@ jupyterhub:
         # which only carries the BIDS analytics snippet)
         template_paths:
           - /opt/hub-theme
+        logo_file: /opt/hub-theme/logo.svg
       OAuthenticator:
         oauth_callback_url: https://lab.lightconeresearch.org/hub/oauth_callback
       GitHubOAuthenticator:
