@@ -1,7 +1,10 @@
+# Lightcone Lab theme for the hub pages (charts/hub/files/themes/lightcone,
+# packed into the hub-theme ConfigMap by charts/hub/templates/hub-theme.yaml)
+hubTheme: lightcone
 jupyterhub:
   httpRoute:
     hostnames:
-      - hub.lightconeresearch.org
+      - lab.lightconeresearch.org
   hub:
     # Persistent workloads are pinned to hyperdisk-capable core nodes
     # (persistentNodeSelector in charts/hub). The cluster default storage
@@ -18,15 +21,30 @@ jupyterhub:
     config:
       JupyterHub:
         authenticator_class: github
-        public_url: https://hub.lightconeresearch.org
+        public_url: https://lab.lightconeresearch.org
+        # theme templates (replaces the chart default /opt/extra_templates,
+        # which only carries the BIDS analytics snippet)
+        template_paths:
+          - /opt/hub-theme
       OAuthenticator:
-        oauth_callback_url: https://hub.lightconeresearch.org/hub/oauth_callback
+        oauth_callback_url: https://lab.lightconeresearch.org/hub/oauth_callback
       GitHubOAuthenticator:
         # access controlled by allowed_users/admin_users in access.json
         # (data in config.enc.yaml); the org/team gating in _common is
         # Berkeley-specific, override it away here
         allowed_organizations: []
         admin_groups: []
+    extraVolumes:
+      - name: hub-theme
+        configMap:
+          name: hub-theme
+    extraVolumeMounts:
+      - name: hub-theme
+        mountPath: /opt/hub-theme
+        readOnly: true
+      - name: hub-theme
+        mountPath: /usr/local/share/jupyterhub/static/theme
+        readOnly: true
   singleuser:
     # match lightcone.user_service_account in tf/clusters/lightcone/main.tf
     serviceAccountName: lightcone-hub-user

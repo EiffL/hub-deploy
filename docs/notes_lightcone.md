@@ -3,8 +3,8 @@
 GCP Project: `lightconehub`
 Region/zone: `europe-west1` / `europe-west1-b`
 Cluster / hub name: `lightcone` (cluster and hub share the name)
-Hostnames: `hub.lightconeresearch.org` (hub), `hub-grafana.lightconeresearch.org`,
-`hub-prometheus.lightconeresearch.org`
+Hostnames: `lab.lightconeresearch.org` (the hub, branded "Lightcone Lab"),
+`hub-grafana.lightconeresearch.org`, `hub-prometheus.lightconeresearch.org`
 Auth: `authenticator_class: github` with the lightcone GitHub app,
 access via `allowed_users`/`admin_users` in `access.json`
 (data in `hubs/lightcone/config.enc.yaml`)
@@ -89,7 +89,9 @@ files must be valid before running any helm session.
    ```
 
 1. Point DNS at the `lightcone-ingress` static IP: create A records for the
-   three hostnames at the DNS provider for `lightconeresearch.org`:
+   three hostnames (`lab`, `hub-grafana`, `hub-prometheus`) at the DNS provider
+   for `lightconeresearch.org` (Cloudflare, records set to DNS-only so the
+   HTTP-01 certificate challenge reaches the cluster):
 
    ```
    gcloud compute addresses describe lightcone-ingress --region europe-west1 --project lightconehub --format='value(address)'
@@ -100,7 +102,7 @@ files must be valid before running any helm session.
 
 1. Hub secrets: write `hubs/lightcone/config.dec.yaml` (gitignored) with the
    GitHub app client id/secret (callback URL
-   `https://hub.lightconeresearch.org/hub/oauth_callback`), a cookie secret
+   `https://lab.lightconeresearch.org/hub/oauth_callback`), a cookie secret
    and a CryptKeeper key (`openssl rand -hex 32` each), and the `access.json`
    data; optionally `jupyterhub.singleuser.extraEnv.OPENAI_API_KEY` for
    opencode/biorouter (see `hubs/demo/config.enc.yaml` for the shape). Then:
@@ -146,6 +148,15 @@ files must be valid before running any helm session.
 
 ## Notes
 
+- Theme: the hub pages are branded as Lightcone Lab from
+  `charts/hub/files/themes/lightcone/` (`page.html`, `login.html`,
+  `lightcone.css`, logos from the website), packed into the `hub-theme`
+  ConfigMap by `charts/hub/templates/hub-theme.yaml` and enabled with
+  `hubTheme: lightcone` plus the volume mounts in `hubs/lightcone/config.yaml`.
+  Colours and type follow the brand package (`../brand`); fonts load from
+  Google Fonts like the website. JupyterHub caches templates, so after a
+  theme change run `kubectl rollout restart -n lightcone deploy/hub`. The
+  BIDS analytics snippet from `charts/hub/values.yaml` is not used here.
 - Persistent volumes: the hub database, grafana and prometheus claims use the
   `auto-balanced` storage class from `charts/support` with at least 4Gi (set in
   `hubs/lightcone/config.yaml` and `clusters/lightcone/support/config.yaml`).
@@ -157,8 +168,8 @@ files must be valid before running any helm session.
   image, resources, opencode/biorouter, ssh env, dask-gateway) and in
   `tf/modules/gke_cluster` / `tf/modules/lightcone`. `hubs/lightcone/config.yaml`
   only carries the hostname-derived values, the NFS `volumeId`, the user
-  service account name, the storage class, and the Cloud Build / dask-gateway
-  names that depend on the project and release name
+  service account name, the storage class, the theme wiring, and the Cloud
+  Build / dask-gateway names that depend on the project and release name
   (`traefik-lightcone-dask-gateway`).
 - The collaboration-groups wiring in `_common` is cilogon-specific;
   collaborations in `access.json` won't create github-auth groups without

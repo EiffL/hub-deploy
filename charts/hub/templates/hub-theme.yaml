@@ -1,0 +1,20 @@
+{{- with .Values.hubTheme }}
+# Optional per-hub theme for the JupyterHub pages. The files in
+# charts/hub/files/themes/<hubTheme>/ (jinja templates, css, logos) are packed
+# into this ConfigMap. The hub config mounts it twice (hub.extraVolumes /
+# hub.extraVolumeMounts): at /opt/hub-theme for the templates
+# (hub.config.JupyterHub.template_paths) and at
+# /usr/local/share/jupyterhub/static/theme for the assets, reachable from the
+# templates as static_url('theme/<file>'). See hubs/lightcone/config.yaml.
+# JupyterHub caches templates: after changing theme files, restart the hub
+# (kubectl rollout restart deploy/hub).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hub-theme
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: hub-theme
+data:
+{{ ($.Files.Glob (printf "files/themes/%s/*" .)).AsConfig | indent 2 }}
+{{- end }}

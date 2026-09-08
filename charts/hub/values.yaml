@@ -4,6 +4,9 @@ coreNodeSelector: &coreNodeSelector
 persistentNodeSelector: &persistentNodeSelector
   hub.jupyter.org/node-purpose: core
   disk-type.gke.io/hyperdisk-balanced: "true"
+# Optional per-hub theme for the JupyterHub pages: the name of a directory
+# under charts/hub/files/themes/ (see templates/hub-theme.yaml).
+hubTheme: ""
 jupyterhub:
   proxy:
     chp:

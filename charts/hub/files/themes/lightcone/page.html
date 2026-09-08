@@ -1,0 +1,36 @@
+{#- Lightcone Lab theme: base page. Mounted at /opt/hub-theme and picked up via
+    hub.config.JupyterHub.template_paths; assets are served from
+    /usr/local/share/jupyterhub/static/theme (static_url('theme/...')). -#}
+{% extends "templates/page.html" %}
+{% block title %}Lightcone Lab{% endblock title %}
+{% block stylesheet %}
+  {{ super() }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Quattrocento:wght@400;700&display=swap">
+  <link rel="stylesheet" href="{{ static_url('theme/lightcone.css') }}" type="text/css" />
+{% endblock stylesheet %}
+{% block favicon %}
+  <link rel="icon" href="{{ static_url('theme/logo.svg') }}" type="image/svg+xml">
+{% endblock favicon %}
+{% block meta %}
+  <meta name="description" content="Lightcone Lab, the open AI-assisted research workbench">
+  <meta name="keywords" content="Lightcone Research, Lightcone Lab, Jupyter, JupyterHub">
+{% endblock meta %}
+{% block logo %}
+  <span id="jupyterhub-logo" class="navbar-brand">
+    <a href="{{ logo_url or base_url }}" class="lc-brand" title="Home">
+      <img src="{{ static_url('theme/logo.svg') }}" alt="" class="jpy-logo lc-brand-mark" />
+      <span class="lc-brand-name"><span class="lc-brand-name-primary">Lightcone</span> <span class="lc-brand-name-secondary">Lab</span></span>
+    </a>
+  </span>
+{% endblock logo %}
+{% block footer %}
+  <footer class="lc-footer">
+    <a href="https://lightconeresearch.org" class="lc-footer-brand" title="Lightcone Research">
+      <img src="{{ static_url('theme/logo-primary.svg') }}" alt="Lightcone Research" />
+    </a>
+    <span class="lc-footer-note">Lightcone Lab runs on <a href="https://jupyter.org/hub">JupyterHub</a>.</span>
+  </footer>
+{% endblock footer %}

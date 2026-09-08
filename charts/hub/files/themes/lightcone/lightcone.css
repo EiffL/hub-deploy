@@ -1,0 +1,409 @@
+/* Lightcone Lab theme for the JupyterHub pages (JupyterHub 6, Bootstrap 5.3).
+ * Palette, semantic roles and type stacks follow the Lightcone Research brand
+ * package (github.com/LightconeResearch/brand: tokens.css, themes.css).
+ * Fonts are loaded from Google Fonts in page.html, as on lightconeresearch.org. */
+
+:root,
+[data-bs-theme="light"] {
+  /* Immutable palette */
+  --lc-palette-antique-gold: #a67c3c;
+  --lc-palette-blue-ink: #4e5a70;
+  --lc-palette-charcoal: #221f20;
+  --lc-palette-slate-blue: #3f7280;
+  --lc-palette-vert-de-gris: #3b7a73;
+  --lc-palette-wax-red: #a45a43;
+  --lc-palette-mushroom-cap: #8b7d70;
+  --lc-palette-darker-parchment: #f1efe9;
+  --lc-palette-parchment: #f8f7f3;
+  --lc-palette-white: #ffffff;
+
+  /* Type: heading Quattrocento, UI Alegreya, body Newsreader */
+  --lc-font-heading: "Quattrocento", Georgia, "Times New Roman", serif;
+  --lc-font-ui: "Alegreya", "Palatino Linotype", Georgia, serif;
+  --lc-font-body: "Newsreader", Georgia, "Times New Roman", serif;
+  --lc-font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Semantic roles, light scheme */
+  --lc-color-canvas: var(--lc-palette-parchment);
+  --lc-color-surface: var(--lc-palette-white);
+  --lc-color-surface-header: var(--lc-palette-parchment);
+  --lc-color-surface-muted: var(--lc-palette-darker-parchment);
+  --lc-color-text: var(--lc-palette-charcoal);
+  --lc-color-text-muted: var(--lc-palette-blue-ink);
+  --lc-color-text-subtle: color-mix(in srgb, var(--lc-palette-mushroom-cap) 83%, var(--lc-palette-charcoal));
+  --lc-color-border: color-mix(in srgb, var(--lc-palette-mushroom-cap) 18%, var(--lc-palette-parchment));
+  --lc-color-border-strong: color-mix(in srgb, var(--lc-palette-mushroom-cap) 38%, var(--lc-palette-parchment));
+  --lc-color-accent: var(--lc-palette-blue-ink);
+  --lc-color-accent-contrast: var(--lc-palette-white);
+  --lc-color-accent-hover: color-mix(in srgb, var(--lc-palette-blue-ink) 82%, var(--lc-palette-charcoal));
+  --lc-color-accent-soft: color-mix(in srgb, var(--lc-palette-blue-ink) 10%, transparent);
+  --lc-color-focus: var(--lc-palette-slate-blue);
+  --lc-color-link: var(--lc-palette-blue-ink);
+  --lc-color-danger: var(--lc-palette-wax-red);
+  --lc-color-danger-hover: color-mix(in srgb, var(--lc-palette-wax-red) 82%, var(--lc-palette-charcoal));
+  --lc-color-gold: var(--lc-palette-antique-gold);
+  --lc-color-gold-strong: color-mix(in srgb, var(--lc-palette-antique-gold) 70%, var(--lc-palette-charcoal));
+  --lc-color-slate: var(--lc-palette-slate-blue);
+  --lc-color-verdigris: var(--lc-palette-vert-de-gris);
+
+  /* Bootstrap hooks */
+  --bs-body-bg: var(--lc-color-canvas);
+  --bs-body-bg-rgb: 248, 247, 243;
+  --bs-body-color: var(--lc-color-text);
+  --bs-body-color-rgb: 34, 31, 32;
+  --bs-body-font-family: var(--lc-font-body);
+  --bs-body-font-size: 1.0625rem;
+  --bs-heading-color: var(--lc-color-gold-strong);
+  --bs-emphasis-color: var(--lc-color-text);
+  --bs-secondary-color: var(--lc-color-text-muted);
+  --bs-secondary-bg: var(--lc-color-surface-muted);
+  --bs-tertiary-bg: var(--lc-color-surface-header);
+  --bs-tertiary-color: var(--lc-color-text-subtle);
+  --bs-border-color: var(--lc-color-border);
+  --bs-border-radius: 0;
+  --bs-border-radius-sm: 0;
+  --bs-border-radius-lg: 0;
+  --bs-link-color: var(--lc-color-link);
+  --bs-link-color-rgb: 78, 90, 112;
+  --bs-link-hover-color: var(--lc-color-accent-hover);
+  --bs-link-hover-color-rgb: 66, 76, 95;
+  --bs-primary: var(--lc-color-accent);
+  --bs-primary-rgb: 78, 90, 112;
+  --bs-danger: var(--lc-color-danger);
+  --bs-danger-rgb: 164, 90, 67;
+  --bs-success: var(--lc-color-verdigris);
+  --bs-success-rgb: 59, 122, 115;
+  --bs-info: var(--lc-color-slate);
+  --bs-info-rgb: 63, 114, 128;
+  --bs-warning: var(--lc-color-gold);
+  --bs-warning-rgb: 166, 124, 60;
+  --bs-focus-ring-color: color-mix(in srgb, var(--lc-color-focus) 35%, transparent);
+  --bs-font-monospace: var(--lc-font-mono);
+}
+
+[data-bs-theme="dark"] {
+  --lc-color-canvas: var(--lc-palette-charcoal);
+  --lc-color-surface: color-mix(in srgb, var(--lc-palette-charcoal) 94%, var(--lc-palette-white));
+  --lc-color-surface-header: color-mix(in srgb, var(--lc-palette-charcoal) 82%, var(--lc-palette-white));
+  --lc-color-surface-muted: var(--lc-color-surface-header);
+  --lc-color-text: var(--lc-palette-parchment);
+  --lc-color-text-muted: color-mix(in srgb, var(--lc-palette-parchment) 78%, var(--lc-palette-mushroom-cap));
+  --lc-color-text-subtle: color-mix(in srgb, var(--lc-palette-parchment) 60%, var(--lc-palette-mushroom-cap));
+  --lc-color-border: color-mix(in srgb, var(--lc-palette-white) 10%, var(--lc-palette-charcoal));
+  --lc-color-border-strong: color-mix(in srgb, var(--lc-palette-white) 20%, var(--lc-palette-charcoal));
+  --lc-color-accent: color-mix(in srgb, var(--lc-palette-blue-ink) 55%, var(--lc-palette-white));
+  --lc-color-accent-contrast: var(--lc-palette-charcoal);
+  --lc-color-accent-hover: color-mix(in srgb, var(--lc-palette-blue-ink) 40%, var(--lc-palette-white));
+  --lc-color-accent-soft: color-mix(in srgb, var(--lc-color-accent) 16%, transparent);
+  --lc-color-focus: color-mix(in srgb, var(--lc-palette-slate-blue) 65%, var(--lc-palette-white));
+  --lc-color-link: var(--lc-color-accent);
+  --lc-color-danger: color-mix(in srgb, var(--lc-palette-wax-red) 65%, var(--lc-palette-white));
+  --lc-color-danger-hover: color-mix(in srgb, var(--lc-palette-wax-red) 50%, var(--lc-palette-white));
+  --lc-color-gold: color-mix(in srgb, var(--lc-palette-antique-gold) 65%, var(--lc-palette-white));
+  --lc-color-gold-strong: var(--lc-color-gold);
+  --lc-color-slate: color-mix(in srgb, var(--lc-palette-slate-blue) 65%, var(--lc-palette-white));
+  --lc-color-verdigris: color-mix(in srgb, var(--lc-palette-vert-de-gris) 65%, var(--lc-palette-white));
+
+  --bs-body-bg: var(--lc-color-canvas);
+  --bs-body-bg-rgb: 34, 31, 32;
+  --bs-body-color: var(--lc-color-text);
+  --bs-body-color-rgb: 248, 247, 243;
+  --bs-heading-color: var(--lc-color-gold-strong);
+  --bs-emphasis-color: var(--lc-color-text);
+  --bs-secondary-color: var(--lc-color-text-muted);
+  --bs-secondary-bg: var(--lc-color-surface-muted);
+  --bs-tertiary-bg: var(--lc-color-surface-header);
+  --bs-tertiary-color: var(--lc-color-text-subtle);
+  --bs-border-color: var(--lc-color-border);
+  --bs-link-color: var(--lc-color-link);
+  --bs-link-color-rgb: 158, 164, 176;
+  --bs-link-hover-color: var(--lc-color-accent-hover);
+  --bs-link-hover-color-rgb: 184, 189, 198;
+  --bs-primary: var(--lc-color-accent);
+  --bs-primary-rgb: 158, 164, 176;
+  --bs-danger: var(--lc-color-danger);
+  --bs-danger-rgb: 196, 148, 133;
+  --bs-focus-ring-color: color-mix(in srgb, var(--lc-color-focus) 35%, transparent);
+}
+
+/* ---- Base ---------------------------------------------------------------- */
+
+body {
+  font-family: var(--lc-font-body);
+  color: var(--lc-color-text);
+  background: var(--lc-color-canvas);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.modal-title {
+  font-family: var(--lc-font-heading);
+  font-weight: 700;
+  color: var(--lc-color-gold-strong);
+  letter-spacing: 0.01em;
+}
+
+a {
+  color: var(--lc-color-link);
+  text-decoration-color: color-mix(in srgb, var(--lc-color-link) 40%, transparent);
+  text-underline-offset: 0.15em;
+}
+a:hover { color: var(--lc-color-accent-hover); }
+
+code, pre, kbd, samp { font-family: var(--lc-font-mono); }
+
+:focus-visible {
+  outline: 2px solid var(--lc-color-focus);
+  outline-offset: 2px;
+}
+
+#noscript {
+  font-family: var(--lc-font-ui);
+  background: var(--lc-color-surface-muted);
+  color: var(--lc-color-text);
+}
+
+/* ---- Navbar -------------------------------------------------------------- */
+
+.navbar.bg-body-tertiary {
+  background: var(--lc-color-surface-header) !important;
+  border-bottom: 1px solid var(--lc-color-border-strong);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+#jupyterhub-logo { margin-left: 0.5rem; }
+
+.lc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+#jupyterhub-logo .lc-brand-mark.jpy-logo {
+  height: 34px;
+  width: auto;
+  margin: 0;
+}
+.lc-brand-name {
+  font-family: var(--lc-font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+.lc-brand-name-primary { color: var(--lc-color-gold); }
+.lc-brand-name-secondary { color: var(--lc-color-accent); }
+
+.navbar .nav-link,
+.navbar #login_widget {
+  font-family: var(--lc-font-ui);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: var(--lc-color-text-muted);
+}
+.navbar .nav-link { text-transform: uppercase; }
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-link.active { color: var(--lc-color-gold-strong); }
+
+.navbar .dropdown-menu {
+  background: var(--lc-color-surface);
+  border: 1px solid var(--lc-color-border-strong);
+  border-radius: 0;
+  font-family: var(--lc-font-ui);
+}
+.navbar .dropdown-item { color: var(--lc-color-text); }
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  background: var(--lc-color-accent-soft);
+  color: var(--lc-color-text);
+}
+
+#dark-theme-toggle { color: var(--lc-color-text-muted); }
+
+/* ---- Buttons ------------------------------------------------------------- */
+
+.btn {
+  font-family: var(--lc-font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 0;
+}
+
+.btn-jupyter,
+.btn-primary {
+  --bs-btn-color: var(--lc-color-accent-contrast);
+  --bs-btn-bg: var(--lc-color-accent);
+  --bs-btn-border-color: var(--lc-color-accent);
+  --bs-btn-hover-color: var(--lc-color-accent-contrast);
+  --bs-btn-hover-bg: var(--lc-color-accent-hover);
+  --bs-btn-hover-border-color: var(--lc-color-accent-hover);
+  --bs-btn-active-color: var(--lc-color-accent-contrast);
+  --bs-btn-active-bg: var(--lc-color-accent-hover);
+  --bs-btn-active-border-color: var(--lc-color-accent-hover);
+  --bs-btn-focus-shadow-rgb: 63, 114, 128;
+  --bs-btn-disabled-bg: var(--lc-color-text-subtle);
+  --bs-btn-disabled-border-color: var(--lc-color-text-subtle);
+  --bs-btn-disabled-color: var(--lc-color-accent-contrast);
+}
+
+.btn-danger {
+  --bs-btn-bg: var(--lc-color-danger);
+  --bs-btn-border-color: var(--lc-color-danger);
+  --bs-btn-hover-bg: var(--lc-color-danger-hover);
+  --bs-btn-hover-border-color: var(--lc-color-danger-hover);
+  --bs-btn-active-bg: var(--lc-color-danger-hover);
+  --bs-btn-active-border-color: var(--lc-color-danger-hover);
+}
+
+.btn-outline-contrast,
+[data-bs-theme="dark"] .btn-outline-contrast {
+  --bs-btn-color: var(--lc-color-accent);
+  --bs-btn-border-color: var(--lc-color-accent);
+  --bs-btn-hover-color: var(--lc-color-accent-contrast);
+  --bs-btn-hover-bg: var(--lc-color-accent);
+  --bs-btn-hover-border-color: var(--lc-color-accent);
+  --bs-btn-active-color: var(--lc-color-accent-contrast);
+  --bs-btn-active-bg: var(--lc-color-accent-hover);
+  --bs-btn-active-border-color: var(--lc-color-accent-hover);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--lc-color-accent);
+  --bs-btn-border-color: var(--lc-color-accent);
+  --bs-btn-hover-bg: var(--lc-color-accent);
+  --bs-btn-hover-border-color: var(--lc-color-accent);
+  --bs-btn-hover-color: var(--lc-color-accent-contrast);
+}
+
+/* ---- Forms, alerts, progress, modals ------------------------------------- */
+
+.form-control,
+.form-select {
+  background: var(--lc-color-surface);
+  color: var(--lc-color-text);
+  border: 1px solid var(--lc-color-border-strong);
+  border-radius: 0;
+  font-family: var(--lc-font-ui);
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--lc-color-focus);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--lc-color-focus) 25%, transparent);
+}
+
+.alert { border-radius: 0; font-family: var(--lc-font-ui); }
+.alert-warning {
+  --bs-alert-bg: color-mix(in srgb, var(--lc-color-gold) 12%, var(--lc-color-surface));
+  --bs-alert-border-color: color-mix(in srgb, var(--lc-color-gold) 45%, transparent);
+  --bs-alert-color: var(--lc-color-text);
+}
+.alert-danger,
+.ajax-error.alert-danger {
+  --bs-alert-bg: color-mix(in srgb, var(--lc-color-danger) 10%, var(--lc-color-surface));
+  --bs-alert-border-color: color-mix(in srgb, var(--lc-color-danger) 45%, transparent);
+  --bs-alert-color: var(--lc-color-text);
+}
+.alert-info {
+  --bs-alert-bg: color-mix(in srgb, var(--lc-color-slate) 10%, var(--lc-color-surface));
+  --bs-alert-border-color: color-mix(in srgb, var(--lc-color-slate) 45%, transparent);
+  --bs-alert-color: var(--lc-color-text);
+}
+.alert-success {
+  --bs-alert-bg: color-mix(in srgb, var(--lc-color-verdigris) 10%, var(--lc-color-surface));
+  --bs-alert-border-color: color-mix(in srgb, var(--lc-color-verdigris) 45%, transparent);
+  --bs-alert-color: var(--lc-color-text);
+}
+.announcement { font-family: var(--lc-font-ui); }
+
+.progress { background: var(--lc-color-surface-muted); border-radius: 0; }
+.progress-bar { background: var(--lc-color-accent); }
+
+.modal-content {
+  background: var(--lc-color-surface);
+  color: var(--lc-color-text);
+  border: 1px solid var(--lc-color-border-strong);
+  border-radius: 0;
+}
+.modal-header, .modal-footer { border-color: var(--lc-color-border); }
+
+.table { --bs-table-bg: transparent; --bs-table-color: var(--lc-color-text); font-family: var(--lc-font-ui); }
+.card { background: var(--lc-color-surface); border: 1px solid var(--lc-color-border); border-radius: 0; }
+
+/* ---- Login --------------------------------------------------------------- */
+
+#login-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  min-height: 70vh;
+  padding: 2rem 1rem;
+}
+
+.lc-login {
+  width: 100%;
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 3rem 2.5rem 2.5rem;
+  text-align: center;
+  background: var(--lc-color-surface);
+  border: 1px solid var(--lc-color-border-strong);
+}
+.lc-login-mark {
+  height: 84px;
+  width: auto;
+  margin-bottom: 1.5rem;
+}
+.lc-login-title {
+  font-family: var(--lc-font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lc-color-gold-strong);
+  margin-bottom: 0.5rem;
+}
+.lc-login-tagline {
+  font-family: var(--lc-font-body);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--lc-color-text-muted);
+  margin-bottom: 2rem;
+}
+.lc-login-button {
+  display: block;
+  width: 100%;
+  padding: 0.85rem 1rem;
+}
+.lc-login-footnote {
+  margin: 1.75rem 0 0;
+  font-family: var(--lc-font-ui);
+  font-size: 0.9rem;
+  color: var(--lc-color-text-subtle);
+}
+
+/* ---- Footer -------------------------------------------------------------- */
+
+.lc-footer {
+  margin-top: auto;
+  padding: 1.5rem 1.5rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--lc-color-border);
+  font-family: var(--lc-font-ui);
+  font-size: 0.85rem;
+  color: var(--lc-color-text-subtle);
+}
+.lc-footer-brand img { height: 22px; width: auto; opacity: 0.9; }
+[data-bs-theme="dark"] .lc-footer-brand img { filter: brightness(1.35); }
+.lc-footer-note a { color: var(--lc-color-text-muted); }
